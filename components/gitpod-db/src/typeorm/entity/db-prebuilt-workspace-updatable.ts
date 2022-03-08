@@ -15,22 +15,30 @@ import { Transformer } from "../transformer";
  *  - INNER JOIN ON prebuiltWorkspaceId ... WHERE isResolved = ...
  *  - SELECT ... WHERE prebuiltWorkspaceId = .... (works because it's the index prefix)
  */
-@Index("ind_prebuiltWorkspaceId_isResolved", ["prebuiltWorkspaceId", "isResolved"])
+@Index("ind_prebuiltWorkspaceId_isResolved", [
+  "prebuiltWorkspaceId",
+  "isResolved",
+])
 @Entity()
-export class DBPrebuiltWorkspaceUpdatable implements PrebuiltWorkspaceUpdatable {
+export class DBPrebuiltWorkspaceUpdatable
+  implements PrebuiltWorkspaceUpdatable
+{
+  @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
+  id: string;
 
-    @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
-    id: string;
+  @Column(TypeORM.UUID_COLUMN_TYPE)
+  prebuiltWorkspaceId: string;
 
-    @Column(TypeORM.UUID_COLUMN_TYPE)
-    prebuiltWorkspaceId: string;
+  @Column()
+  owner: string;
 
-    @Column()
-    owner: string;
+  @Column()
+  repo: string;
 
-    @Column()
-    repo: string;
+  @Column()
+  isResolved: boolean;
 
+<<<<<<< HEAD
     @Column({
         default: '',
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED
@@ -39,27 +47,26 @@ export class DBPrebuiltWorkspaceUpdatable implements PrebuiltWorkspaceUpdatable 
 
     @Column()
     isResolved: boolean;
+=======
+  @Column()
+  installationId: string;
+>>>>>>> 083c5c5e (Reformat gitpod-db with prettier)
 
-    @Column()
-    installationId: string;
+  @Column({
+    default: "",
+    transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
+  })
+  contextUrl?: string;
 
+  @Column({
+    default: "",
+    transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
+  })
+  issue?: string;
 
-    @Column({
-        default: '',
-        transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED
-    })
-    contextUrl?: string;
-
-    @Column({
-        default: '',
-        transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED
-    })
-    issue?: string;
-
-    @Column({
-        default: '',
-        transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED
-    })
-    label?: string;
-
+  @Column({
+    default: "",
+    transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
+  })
+  label?: string;
 }

@@ -7,6 +7,6 @@
 export const OssAllowListDB = Symbol("OssAllowListDB");
 
 export interface OssAllowListDB {
-    delete(identity: string): Promise<void>;
-    hasAny(identities: string[]): Promise<boolean>
+  delete(identity: string): Promise<void>;
+  hasAny(identities: string[]): Promise<boolean>;
 }

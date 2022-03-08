@@ -4,7 +4,10 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { InstallationAdmin, InstallationAdminSettings } from "@gitpod/gitpod-protocol";
+import {
+  InstallationAdmin,
+  InstallationAdminSettings,
+} from "@gitpod/gitpod-protocol";
 import { Entity, Column, PrimaryColumn } from "typeorm";
 import { TypeORM } from "../typeorm";
 
@@ -13,6 +16,6 @@ export class DBInstallationAdmin implements InstallationAdmin {
   @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
   id: string;
 
-  @Column('simple-json')
+  @Column("simple-json")
   settings: InstallationAdminSettings;
 }

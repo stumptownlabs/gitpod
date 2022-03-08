@@ -12,32 +12,30 @@ import { TypeORM } from "../../typeorm/typeorm";
 @Entity()
 // on DB but not Typeorm: @Index("ind_dbsync", ["_lastModified"])   // DBSync
 export class DBProjectInfo {
+  @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
+  projectId: string;
 
-    @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
-    projectId: string;
+  @Column({
+    type: "simple-json",
+    transformer: (() => {
+      return {
+        to(value: any): any {
+          return JSON.stringify(value);
+        },
+        from(value: any): any {
+          try {
+            const obj = JSON.parse(value);
+            if (Project.Overview.is(obj)) {
+              return obj;
+            }
+          } catch (error) {}
+        },
+      };
+    })(),
+  })
+  overview: Project.Overview;
 
-    @Column({
-        type: 'simple-json',
-        transformer: (() => {
-            return {
-                to(value: any): any {
-                    return JSON.stringify(value);
-                },
-                from(value: any): any {
-                    try {
-                        const obj = JSON.parse(value);
-                        if (Project.Overview.is(obj)) {
-                            return obj;
-                        }
-                    } catch (error) {
-                    }
-                }
-            };
-        })()
-    })
-    overview: Project.Overview;
-
-    // This column triggers the db-sync deletion mechanism. It's not intended for public consumption.
-    @Column()
-    deleted: boolean;
+  // This column triggers the db-sync deletion mechanism. It's not intended for public consumption.
+  @Column()
+  deleted: boolean;
 }

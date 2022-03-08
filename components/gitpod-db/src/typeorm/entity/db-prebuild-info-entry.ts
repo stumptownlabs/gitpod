@@ -11,27 +11,24 @@ import { TypeORM } from "../../typeorm/typeorm";
 
 @Entity()
 export class DBPrebuildInfo {
+  @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
+  prebuildId: string;
 
-    @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
-    prebuildId: string;
-
-    @Column({
-        type: 'simple-json',
-        transformer: (() => {
-            return {
-                to(value: any): any {
-                    return JSON.stringify(value);
-                },
-                from(value: any): any {
-                    try {
-                        const obj = JSON.parse(value);
-                        return PrebuildInfo.is(obj) ? obj : undefined;
-                    } catch (error) {
-                    }
-                }
-            };
-        })()
-    })
-    info: PrebuildInfo;
-
+  @Column({
+    type: "simple-json",
+    transformer: (() => {
+      return {
+        to(value: any): any {
+          return JSON.stringify(value);
+        },
+        from(value: any): any {
+          try {
+            const obj = JSON.parse(value);
+            return PrebuildInfo.is(obj) ? obj : undefined;
+          } catch (error) {}
+        },
+      };
+    })(),
+  })
+  info: PrebuildInfo;
 }
