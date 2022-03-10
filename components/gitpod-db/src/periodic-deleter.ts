@@ -13,8 +13,7 @@ import { repeat } from '@gitpod/gitpod-protocol/lib/util/repeat';
 
 @injectable()
 export class PeriodicDbDeleter {
-    @inject(GitpodTableDescriptionProvider)
-    protected readonly tableProvider: GitpodTableDescriptionProvider;
+    @inject(GitpodTableDescriptionProvider) protected readonly tableProvider: GitpodTableDescriptionProvider;
     @inject(TypeORM) protected readonly typeORM: TypeORM;
 
     start() {

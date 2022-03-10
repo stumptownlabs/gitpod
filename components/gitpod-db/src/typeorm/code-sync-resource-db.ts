@@ -32,9 +32,7 @@ export class CodeSyncResourceDB {
                     .addSelect('resource2.kind')
                     .addSelect('max(resource2.created)')
                     .from(DBCodeSyncResource, 'resource2')
-                    .where('resource2.userId = :userId AND resource2.deleted = 0', {
-                        userId,
-                    })
+                    .where('resource2.userId = :userId AND resource2.deleted = 0', { userId })
                     .groupBy('resource2.kind')
                     .orderBy('resource2.created', 'DESC')
                     .getQuery();
@@ -102,11 +100,7 @@ export class CodeSyncResourceDB {
                     .createQueryBuilder()
                     .update(DBCodeSyncResource)
                     .set({ rev })
-                    .where('userId = :userId AND kind = :kind AND rev = :rev', {
-                        userId,
-                        kind,
-                        rev: toUpdated.rev,
-                    })
+                    .where('userId = :userId AND kind = :kind AND rev = :rev', { userId, kind, rev: toUpdated.rev })
                     .execute();
             } else {
                 await manager

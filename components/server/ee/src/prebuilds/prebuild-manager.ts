@@ -8,11 +8,7 @@ import { DBWithTracing, TracedWorkspaceDB, WorkspaceDB } from '@gitpod/gitpod-db
 import { CommitContext, CommitInfo, PrebuiltWorkspace, Project, ProjectEnvVar, StartPrebuildContext, StartPrebuildResult, TaskConfig, User, Workspace, WorkspaceConfig, WorkspaceInstance } from '@gitpod/gitpod-protocol';
 import { log } from '@gitpod/gitpod-protocol/lib/util/logging';
 import { TraceContext } from '@gitpod/gitpod-protocol/lib/util/tracing';
-<<<<<<< HEAD
 import { getCommitInfo, HostContextProvider } from '../../../src/auth/host-context-provider';
-=======
-import { HostContextProvider } from '../../../src/auth/host-context-provider';
->>>>>>> 3e7b850b (regen)
 import { WorkspaceFactory } from '../../../src/workspace/workspace-factory';
 import { ConfigProvider } from '../../../src/workspace/config-provider';
 import { WorkspaceStarter } from '../../../src/workspace/workspace-starter';
@@ -22,10 +18,6 @@ import { secondsBefore } from '@gitpod/gitpod-protocol/lib/util/timeutil';
 
 import { inject, injectable } from 'inversify';
 import * as opentracing from 'opentracing';
-<<<<<<< HEAD
-=======
-import { URL } from 'url';
->>>>>>> 3e7b850b (regen)
 
 export class WorkspaceRunningError extends Error {
     constructor(msg: string, public instance: WorkspaceInstance) {
@@ -58,11 +50,7 @@ export class PrebuildManager {
         const cloneURL = context.repository.cloneUrl;
         const commitSHAIdentifier = CommitContext.computeHash(context);
         span.setTag("cloneURL", cloneURL);
-<<<<<<< HEAD
         span.setTag("commit", commitInfo?.sha);
-=======
-        span.setTag("commit", commit);
->>>>>>> 3e7b850b (regen)
 
         try {
             if (user.blocked) {
@@ -119,36 +107,13 @@ export class PrebuildManager {
 
 
             const projectEnvVarsPromise = project ? this.projectService.getProjectEnvironmentVariables(project.id) : [];
-<<<<<<< HEAD
 
             const workspace = await this.workspaceFactory.createForContext({span}, user, prebuildContext, context.normalizedContextURL!);
             const prebuildPromise = this.workspaceDB.trace({span}).findPrebuildByWorkspaceID(workspace.id)!;
-=======
-            const workspace = await this.workspaceFactory.createForContext({span}, user, prebuildContext, contextURL);
-            const prebuild = await this.workspaceDB.trace({span}).findPrebuildByWorkspaceID(workspace.id)!;
-            if (!prebuild) {
-                throw new Error(`Failed to create a prebuild for: ${contextURL}`);
-            }
-
-            if (await this.shouldRateLimitPrebuild(span, cloneURL)) {
-                prebuild.state = "aborted";
-                prebuild.error = "Prebuild is rate limited. Please contact Gitpod if you believe this happened in error.";
-
-                await this.workspaceDB.trace({ span }).storePrebuiltWorkspace(prebuild);
-                span.setTag("starting", false);
-                span.setTag("ratelimited", true);
-                return {
-                    wsid: workspace.id,
-                    prebuildId: prebuild.id,
-                    done: false,
-                };
-            }
->>>>>>> 3e7b850b (regen)
 
             span.setTag("starting", true);
             const projectEnvVars = await projectEnvVarsPromise;
             await this.workspaceStarter.startWorkspace({ span }, workspace, user, [], projectEnvVars, {excludeFeatureFlags: ['full_workspace_backup']});
-<<<<<<< HEAD
             const prebuild = await prebuildPromise;
             if (!prebuild) {
                 throw new Error(`Failed to create a prebuild for: ${context.normalizedContextURL}`);
@@ -182,8 +147,6 @@ export class PrebuildManager {
                 }
                 await this.storePrebuildInfo({ span }, project, prebuild, workspace, user, aCommitInfo);
             }
-=======
->>>>>>> 3e7b850b (regen)
             return { prebuildId: prebuild.id, wsid: workspace.id, done: false };
         } catch (err) {
             TraceContext.setError({ span }, err);
@@ -289,35 +252,6 @@ export class PrebuildManager {
             // changePR
             changeUrl: ws.contextURL,
         });
-    }
-
-    private async shouldRateLimitPrebuild(span: opentracing.Span, cloneURL: string): Promise<boolean> {
-        const windowStart = secondsBefore(new Date().toISOString(), PREBUILD_LIMITER_WINDOW_SECONDS);
-        const unabortedCount = await this.workspaceDB.trace({span}).countUnabortedPrebuildsSince(cloneURL, new Date(windowStart));
-        const limit = this.getPrebuildRateLimitForCloneURL(cloneURL);
-
-        if (unabortedCount >= limit) {
-            log.debug("Prebuild exceeds rate limit", { limit, unabortedPrebuildsCount: unabortedCount, cloneURL });
-            return true;
-        }
-        return false;
-    }
-
-    private getPrebuildRateLimitForCloneURL(cloneURL: string): number {
-        // First we use any explicit overrides for a given cloneURL
-        let limit = this.config.prebuildLimiter[cloneURL];
-        if (limit > 0) {
-            return limit;
-        }
-
-        // Find if there is a default value set under the '*' key
-        limit = this.config.prebuildLimiter['*'];
-        if (limit > 0) {
-            return limit;
-        }
-
-        // Last resort default
-        return PREBUILD_LIMITER_DEFAULT_LIMIT;
     }
 
     private async shouldRateLimitPrebuild(span: opentracing.Span, cloneURL: string): Promise<boolean> {

@@ -51,9 +51,7 @@ export class TypeORMAppInstallationDBImpl implements AppInstallationDB {
         const repo = await this.getRepo();
         const qb = repo
             .createQueryBuilder('installation')
-            .where('installation.installationID = :installationID', {
-                installationID,
-            })
+            .where('installation.installationID = :installationID', { installationID })
             .andWhere('installation.state != "uninstalled"')
             .orderBy('installation.lastUpdateTime', 'DESC')
             .limit(1);
@@ -68,10 +66,7 @@ export class TypeORMAppInstallationDBImpl implements AppInstallationDB {
     ) {
         const installation = await this.findInstallation(platform, installationID);
         if (!installation) {
-            log.warn('Cannot record uninstallation of non-existent installation', {
-                platform,
-                installationID,
-            });
+            log.warn('Cannot record uninstallation of non-existent installation', { platform, installationID });
             return;
         }
 

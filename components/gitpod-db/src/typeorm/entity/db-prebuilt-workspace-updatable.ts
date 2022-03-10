@@ -30,27 +30,17 @@ export class DBPrebuiltWorkspaceUpdatable implements PrebuiltWorkspaceUpdatable 
     @Column()
     repo: string;
 
-    @Column()
-    isResolved: boolean;
-
-<<<<<<< HEAD
-<<<<<<< HEAD
     @Column({
         default: '',
-        transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED
+        transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     commitSHA?: string;
 
     @Column()
     isResolved: boolean;
-=======
-  @Column()
-  installationId: string;
->>>>>>> 083c5c5e (Reformat gitpod-db with prettier)
-=======
+
     @Column()
     installationId: string;
->>>>>>> 3e7b850b (regen)
 
     @Column({
         default: '',

@@ -47,8 +47,7 @@ export let encryptionService: EncryptionService;
 @injectable()
 export class TypeORMUserDBImpl implements UserDB {
     @inject(TypeORM) protected readonly typeorm: TypeORM;
-    @inject(EncryptionService)
-    protected readonly encryptionService: EncryptionService;
+    @inject(EncryptionService) protected readonly encryptionService: EncryptionService;
 
     @postConstruct()
     init() {
@@ -139,9 +138,7 @@ export class TypeORMUserDBImpl implements UserDB {
                     .select('user1.id')
                     .from(DBUser, 'user1')
                     .leftJoin('user1.identities', 'identity')
-                    .where(`identity.authProviderId = :authProviderId`, {
-                        authProviderId: identity.authProviderId,
-                    })
+                    .where(`identity.authProviderId = :authProviderId`, { authProviderId: identity.authProviderId })
                     .andWhere(`identity.authId = :authId`, { authId: identity.authId })
                     .andWhere(`identity.deleted != true`)
                     .andWhere(`user1.markedDeleted != true`)
@@ -217,10 +214,7 @@ export class TypeORMUserDBImpl implements UserDB {
     public async findGitpodTokensOfUser(userId: string, tokenHash: string): Promise<GitpodToken | undefined> {
         const repo = await this.getGitpodTokenRepo();
         const qBuilder = repo.createQueryBuilder('gitpodToken').leftJoinAndSelect('gitpodToken.user', 'user');
-        qBuilder.where('user.id = :userId AND gitpodToken.tokenHash = :tokenHash', {
-            userId,
-            tokenHash,
-        });
+        qBuilder.where('user.id = :userId AND gitpodToken.tokenHash = :tokenHash', { userId, tokenHash });
         return qBuilder.getOne();
     }
 
@@ -265,13 +259,9 @@ export class TypeORMUserDBImpl implements UserDB {
         const repo = await this.getIdentitiesRepo();
         const qBuilder = repo
             .createQueryBuilder('identity')
-            .where(`identity.authProviderId = :authProviderId`, {
-                authProviderId: identity.authProviderId,
-            })
+            .where(`identity.authProviderId = :authProviderId`, { authProviderId: identity.authProviderId })
             .andWhere(`identity.deleted != true`)
-            .andWhere(`identity.authName = :authName`, {
-                authName: identity.authName,
-            });
+            .andWhere(`identity.authName = :authName`, { authName: identity.authName });
         return qBuilder.getMany();
     }
 
@@ -347,10 +337,7 @@ export class TypeORMUserDBImpl implements UserDB {
 
     public async findTokensForIdentity(identity: Identity, includeDeleted?: boolean): Promise<TokenEntry[]> {
         const repo = await this.getTokenRepo();
-        const entry = await repo.find({
-            authProviderId: identity.authProviderId,
-            authId: identity.authId,
-        });
+        const entry = await repo.find({ authProviderId: identity.authProviderId, authId: identity.authId });
         return entry.filter((te) => includeDeleted || !te.deleted);
     }
 
@@ -428,9 +415,7 @@ export class TypeORMUserDBImpl implements UserDB {
             });
         }
         if (excludeBuiltinUsers) {
-            qBuilder.andWhere('user.id <> :userId', {
-                userId: BUILTIN_WORKSPACE_PROBE_USER_ID,
-            });
+            qBuilder.andWhere('user.id <> :userId', { userId: BUILTIN_WORKSPACE_PROBE_USER_ID });
         }
         qBuilder.orderBy('user.' + orderBy, orderDir);
         qBuilder.skip(offset).take(limit).select();

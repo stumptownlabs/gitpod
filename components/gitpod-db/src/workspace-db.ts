@@ -165,29 +165,15 @@ export interface WorkspaceDB {
     findPrebuildByWorkspaceID(wsid: string): Promise<PrebuiltWorkspace | undefined>;
     findPrebuildByID(pwsid: string): Promise<PrebuiltWorkspace | undefined>;
     countRunningPrebuilds(cloneURL: string): Promise<number>;
-    findQueuedPrebuilds(cloneURL?: string): Promise<PrebuildWithWorkspace[]>;
-    attachUpdatableToPrebuild(pwsid: string, update: PrebuiltWorkspaceUpdatable): Promise<void>;
-    findUpdatablesForPrebuild(pwsid: string): Promise<PrebuiltWorkspaceUpdatable[]>;
-    markUpdatableResolved(updatableId: string): Promise<void>;
-    getUnresolvedUpdatables(): Promise<PrebuiltUpdatableAndWorkspace[]>;
-
-<<<<<<< HEAD
-    storePrebuiltWorkspace(pws: PrebuiltWorkspace): Promise<PrebuiltWorkspace>;
-    findPrebuiltWorkspaceByCommit(cloneURL: string, commit: string): Promise<PrebuiltWorkspace | undefined>;
-    findPrebuildsWithWorkpace(cloneURL: string): Promise<PrebuildWithWorkspace[]>;
-    findPrebuildByWorkspaceID(wsid: string): Promise<PrebuiltWorkspace | undefined>;
-    findPrebuildByID(pwsid: string): Promise<PrebuiltWorkspace | undefined>;
-    countRunningPrebuilds(cloneURL: string): Promise<number>;
     countUnabortedPrebuildsSince(cloneURL: string, date: Date): Promise<number>;
     findQueuedPrebuilds(cloneURL?: string): Promise<PrebuildWithWorkspace[]>;
     attachUpdatableToPrebuild(pwsid: string, update: PrebuiltWorkspaceUpdatable): Promise<void>;
     findUpdatablesForPrebuild(pwsid: string): Promise<PrebuiltWorkspaceUpdatable[]>;
     markUpdatableResolved(updatableId: string): Promise<void>;
     getUnresolvedUpdatables(): Promise<PrebuiltUpdatableAndWorkspace[]>;
-=======
+
     findLayoutDataByWorkspaceId(workspaceId: string): Promise<LayoutData | undefined>;
     storeLayoutData(layoutData: LayoutData): Promise<LayoutData>;
->>>>>>> 3e7b850b (regen)
 
     hardDeleteWorkspace(workspaceID: string): Promise<void>;
 

@@ -7,9 +7,7 @@
 import { PendingGithubEvent, User, Identity } from '@gitpod/gitpod-protocol';
 import { EntityManager } from 'typeorm';
 
-export type PendingGithubEventWithUser = PendingGithubEvent & {
-    identity: Identity & { user: User };
-};
+export type PendingGithubEventWithUser = PendingGithubEvent & { identity: Identity & { user: User } };
 
 export const TransactionalPendingGithubEventDBFactory = Symbol('TransactionalPendingGithubEventDBFactory');
 export interface TransactionalPendingGithubEventDBFactory {

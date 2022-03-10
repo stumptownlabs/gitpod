@@ -24,8 +24,7 @@ function toProjectEnvVar(envVarWithValue: ProjectEnvVarWithValue): ProjectEnvVar
 @injectable()
 export class ProjectDBImpl implements ProjectDB {
     @inject(TypeORM) typeORM: TypeORM;
-    @inject(EncryptionService)
-    protected readonly encryptionService: EncryptionService;
+    @inject(EncryptionService) protected readonly encryptionService: EncryptionService;
 
     protected async getEntityManager() {
         return (await this.typeORM.getConnection()).manager;
@@ -111,9 +110,7 @@ export class ProjectDBImpl implements ProjectDB {
 
         const queryBuilder = projectRepo
             .createQueryBuilder('project')
-            .where('project.cloneUrl LIKE :searchTerm', {
-                searchTerm: `%${searchTerm}%`,
-            })
+            .where('project.cloneUrl LIKE :searchTerm', { searchTerm: `%${searchTerm}%` })
             .skip(offset)
             .take(limit)
             .orderBy(orderBy, orderDir);
@@ -129,10 +126,7 @@ export class ProjectDBImpl implements ProjectDB {
 
     public async updateProject(partialProject: PartialProject): Promise<void> {
         const repo = await this.getRepo();
-        const count = await repo.count({
-            id: partialProject.id,
-            markedDeleted: false,
-        });
+        const count = await repo.count({ id: partialProject.id, markedDeleted: false });
         if (count < 1) {
             throw new Error('A project with this ID could not be found');
         }
@@ -169,11 +163,7 @@ export class ProjectDBImpl implements ProjectDB {
             );
         }
         const envVarRepo = await this.getProjectEnvVarRepo();
-        const envVarWithValue = await envVarRepo.findOne({
-            projectId,
-            name,
-            deleted: false,
-        });
+        const envVarWithValue = await envVarRepo.findOne({ projectId, name, deleted: false });
         if (envVarWithValue) {
             await envVarRepo.update(
                 { id: envVarWithValue.id, projectId: envVarWithValue.projectId },
@@ -194,20 +184,14 @@ export class ProjectDBImpl implements ProjectDB {
 
     public async getProjectEnvironmentVariables(projectId: string): Promise<ProjectEnvVar[]> {
         const envVarRepo = await this.getProjectEnvVarRepo();
-        const envVarsWithValue = await envVarRepo.find({
-            projectId,
-            deleted: false,
-        });
+        const envVarsWithValue = await envVarRepo.find({ projectId, deleted: false });
         const envVars = envVarsWithValue.map(toProjectEnvVar);
         return envVars;
     }
 
     public async getProjectEnvironmentVariableById(variableId: string): Promise<ProjectEnvVar | undefined> {
         const envVarRepo = await this.getProjectEnvVarRepo();
-        const envVarWithValue = await envVarRepo.findOne({
-            id: variableId,
-            deleted: false,
-        });
+        const envVarWithValue = await envVarRepo.findOne({ id: variableId, deleted: false });
         if (!envVarWithValue) {
             return;
         }
@@ -217,10 +201,7 @@ export class ProjectDBImpl implements ProjectDB {
 
     public async deleteProjectEnvironmentVariable(variableId: string): Promise<void> {
         const envVarRepo = await this.getProjectEnvVarRepo();
-        const envVarWithValue = await envVarRepo.findOne({
-            id: variableId,
-            deleted: false,
-        });
+        const envVarWithValue = await envVarRepo.findOne({ id: variableId, deleted: false });
         if (!envVarWithValue) {
             throw new Error('A environment variable with this name could not be found for this project');
         }

@@ -34,11 +34,7 @@ export class UpdateExamples1616920059049 implements MigrationInterface {
                 description: 'A simple .NET Core application example',
                 priority: 20,
             },
-            {
-                url: 'https://github.com/symfony/demo',
-                description: 'A Symfony demo application',
-                priority: 10,
-            },
+            { url: 'https://github.com/symfony/demo', description: 'A Symfony demo application', priority: 10 },
         ];
         // delete old entries
         await queryRunner.query('DELETE FROM d_b_repository_white_list');

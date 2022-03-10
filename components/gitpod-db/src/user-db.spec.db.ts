@@ -189,22 +189,10 @@ namespace TestData {
         readonly: false,
     };
     export const ID1: Identity = { ...DEFAULT, authId: '2345' };
-    export const ID2: Identity = {
-        ...DEFAULT,
-        authId: '3456',
-        authProviderId: 'Public-GitLab',
-    };
-    export const ID3: Identity = {
-        ...DEFAULT,
-        authId: '4567',
-        authProviderId: 'ACME',
-    };
+    export const ID2: Identity = { ...DEFAULT, authId: '3456', authProviderId: 'Public-GitLab' };
+    export const ID3: Identity = { ...DEFAULT, authId: '4567', authProviderId: 'ACME' };
     export const ID4: Identity = { ...DEFAULT, authId: '5678' };
-    export const ID5: Identity = {
-        ...DEFAULT,
-        authId: '6789',
-        authProviderId: 'ACME',
-    };
+    export const ID5: Identity = { ...DEFAULT, authId: '6789', authProviderId: 'ACME' };
     export const DEFAULT_WS: Workspace = {
         id: '1',
         type: 'regular',

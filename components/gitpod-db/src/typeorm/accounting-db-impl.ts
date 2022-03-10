@@ -23,8 +23,7 @@ import { TypeORM } from './typeorm';
 @injectable()
 export class TypeORMAccountingDBImpl implements AccountingDB {
     @inject(TypeORM) typeORM: TypeORM;
-    @inject(TransactionalAccountingDBFactory)
-    protected readonly transactionalFactory: TransactionalAccountingDBFactory;
+    @inject(TransactionalAccountingDBFactory) protected readonly transactionalFactory: TransactionalAccountingDBFactory;
 
     async transaction<T>(
         closure: (db: AccountingDB) => Promise<T>,
@@ -220,9 +219,7 @@ export class TypeORMAccountingDBImpl implements AccountingDB {
         return (await this.getSubscriptionRepo())
             .createQueryBuilder('subscription')
             .where('subscription.userId  = :userId ', { userId: userId })
-            .andWhere('subscription.paymentReference = :paymentReference', {
-                paymentReference,
-            })
+            .andWhere('subscription.paymentReference = :paymentReference', { paymentReference })
             .andWhere('subscription.deleted != true')
             .andWhere('subscription.planId != "free"') // TODO DEL FREE-SUBS
             .orderBy('subscription.startDate', 'DESC')

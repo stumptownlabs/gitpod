@@ -38,10 +38,7 @@ export class TypeORMPendingGithubEventDBImpl implements PendingGithubEventDB {
         const repo = await this.getRepo();
         return await repo
             .createQueryBuilder('pghe')
-            .where(`pghe.githubUserId = :accountId AND pghe.type LIKE :tpe`, {
-                accountId,
-                tpe: `${type}%`,
-            })
+            .where(`pghe.githubUserId = :accountId AND pghe.type LIKE :tpe`, { accountId, tpe: `${type}%` })
             .getMany();
     }
 

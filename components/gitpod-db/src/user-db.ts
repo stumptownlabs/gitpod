@@ -148,6 +148,6 @@ export interface OwnerAndRepo {
     repo: string;
 }
 
-export type UserEmailContact = Pick<User, 'id' | 'name'> & {
-    primaryEmail: string;
-} & { additionalData?: Pick<AdditionalUserData, 'emailNotificationSettings'> };
+export type UserEmailContact = Pick<User, 'id' | 'name'> & { primaryEmail: string } & {
+    additionalData?: Pick<AdditionalUserData, 'emailNotificationSettings'>;
+};

@@ -61,11 +61,7 @@ export class TeamDBImpl implements TeamDB {
 
     public async findTeamById(teamId: string): Promise<Team | undefined> {
         const teamRepo = await this.getTeamRepo();
-        return teamRepo.findOne({
-            id: teamId,
-            deleted: false,
-            markedDeleted: false,
-        });
+        return teamRepo.findOne({ id: teamId, deleted: false, markedDeleted: false });
     }
 
     public async findMembersByTeam(teamId: string): Promise<TeamMemberInfo[]> {
@@ -130,11 +126,7 @@ export class TeamDBImpl implements TeamDB {
             throw new Error('A team cannot have the same name as an existing user');
         }
         const teamRepo = await this.getTeamRepo();
-        const existingTeam = await teamRepo.findOne({
-            slug,
-            deleted: false,
-            markedDeleted: false,
-        });
+        const existingTeam = await teamRepo.findOne({ slug, deleted: false, markedDeleted: false });
         if (!!existingTeam) {
             throw new Error('A team with this name already exists');
         }
@@ -172,11 +164,7 @@ export class TeamDBImpl implements TeamDB {
             throw new Error('A team with this ID could not be found');
         }
         const membershipRepo = await this.getMembershipRepo();
-        const membership = await membershipRepo.findOne({
-            teamId,
-            userId,
-            deleted: false,
-        });
+        const membership = await membershipRepo.findOne({ teamId, userId, deleted: false });
         if (!!membership) {
             throw new Error(`You are already a member of this team. (${team.slug})`);
         }
@@ -196,11 +184,7 @@ export class TeamDBImpl implements TeamDB {
             throw new Error('A team with this ID could not be found');
         }
         const membershipRepo = await this.getMembershipRepo();
-        const membership = await membershipRepo.findOne({
-            teamId,
-            userId,
-            deleted: false,
-        });
+        const membership = await membershipRepo.findOne({ teamId, userId, deleted: false });
         if (!membership) {
             throw new Error('The user is not currently a member of this team');
         }
@@ -215,11 +199,7 @@ export class TeamDBImpl implements TeamDB {
             throw new Error('A team with this ID could not be found');
         }
         const membershipRepo = await this.getMembershipRepo();
-        const membership = await membershipRepo.findOne({
-            teamId,
-            userId,
-            deleted: false,
-        });
+        const membership = await membershipRepo.findOne({ teamId, userId, deleted: false });
         if (!membership) {
             throw new Error('You are not currently a member of this team');
         }

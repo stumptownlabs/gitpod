@@ -33,11 +33,7 @@ export class TermsAcceptanceDBImpl implements TermsAcceptanceDB {
     }
     async updateAcceptedRevision(userId: string, termsRevision: string): Promise<void> {
         const repo = await this.getTermsAcceptanceRepo();
-        await repo.save(<TermsAcceptanceEntry>{
-            userId,
-            termsRevision,
-            acceptionTime: new Date().toISOString(),
-        });
+        await repo.save(<TermsAcceptanceEntry>{ userId, termsRevision, acceptionTime: new Date().toISOString() });
         // if entity does not exist in the database then inserts, otherwise updates.
     }
 }

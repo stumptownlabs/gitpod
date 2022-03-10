@@ -7,27 +7,16 @@
 import * as chai from 'chai';
 const expect = chai.expect;
 import { suite, test, timeout } from 'mocha-typescript';
-<<<<<<< HEAD
 import { fail } from 'assert';
 
 import { WorkspaceInstance, Workspace, PrebuiltWorkspace } from '@gitpod/gitpod-protocol';
 import { testContainer } from './test-container';
 import { TypeORMWorkspaceDBImpl } from './typeorm/workspace-db-impl';
-=======
-
-import { WorkspaceInstance, Workspace } from '@gitpod/gitpod-protocol';
-import { testContainer } from './test-container';
-import { TypeORMWorkspaceDBImpl } from './typeorm/workspace-db-impl';
-import { fail } from 'assert';
->>>>>>> 3e7b850b (regen)
 import { TypeORM } from './typeorm/typeorm';
 import { DBWorkspace } from './typeorm/entity/db-workspace';
 import { DBPrebuiltWorkspace } from './typeorm/entity/db-prebuilt-workspace';
 import { DBWorkspaceInstance } from './typeorm/entity/db-workspace-instance';
-<<<<<<< HEAD
 import { secondsBefore } from '@gitpod/gitpod-protocol/lib/util/timeutil';
-=======
->>>>>>> 3e7b850b (regen)
 
 @suite
 class WorkspaceDBSpec {
@@ -437,10 +426,6 @@ class WorkspaceDBSpec {
         expect(dbResult[1].workspace.id).to.eq(this.ws2.id);
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 3e7b850b (regen)
     @test(timeout(10000))
     public async testFind_ByProjectIds_03() {
         await Promise.all([
@@ -454,11 +439,7 @@ class WorkspaceDBSpec {
             userId: this.userId,
             includeHeadless: false,
             projectId: [],
-<<<<<<< HEAD
-            includeWithoutProject: false
-=======
             includeWithoutProject: false,
->>>>>>> 3e7b850b (regen)
         });
 
         expect(dbResult.length).to.eq(0);
@@ -482,11 +463,7 @@ class WorkspaceDBSpec {
             userId: this.userId,
             includeHeadless: false,
             projectId: [],
-<<<<<<< HEAD
-            includeWithoutProject: true
-=======
             includeWithoutProject: true,
->>>>>>> 3e7b850b (regen)
         });
 
         expect(dbResult.length).to.eq(1);
@@ -509,11 +486,7 @@ class WorkspaceDBSpec {
             userId: this.userId,
             includeHeadless: false,
             projectId: [this.projectBID],
-<<<<<<< HEAD
-            includeWithoutProject: true
-=======
             includeWithoutProject: true,
->>>>>>> 3e7b850b (regen)
         });
 
         expect(dbResult.length).to.eq(2);
@@ -521,12 +494,11 @@ class WorkspaceDBSpec {
         expect(dbResult[0].workspace.id).to.eq(this.ws2.id);
         expect(dbResult[1].workspace.id).to.eq(this.ws3.id);
     }
-<<<<<<< HEAD
 
     @test(timeout(10000))
     public async testCountUnabortedPrebuildsSince() {
         const now = new Date();
-        const cloneURL = "https://github.com/gitpod-io/gitpod";
+        const cloneURL = 'https://github.com/gitpod-io/gitpod';
 
         await Promise.all([
             // Created now, and queued
@@ -536,7 +508,7 @@ class WorkspaceDBSpec {
                 creationTime: now.toISOString(),
                 cloneURL: cloneURL,
                 commit: '',
-                state: 'queued'
+                state: 'queued',
             }),
             // now and aborted
             this.storePrebuiltWorkspace({
@@ -545,7 +517,7 @@ class WorkspaceDBSpec {
                 creationTime: now.toISOString(),
                 cloneURL: cloneURL,
                 commit: '',
-                state: 'aborted'
+                state: 'aborted',
             }),
             // completed over a minute ago
             this.storePrebuiltWorkspace({
@@ -554,19 +526,19 @@ class WorkspaceDBSpec {
                 creationTime: secondsBefore(now.toISOString(), 62),
                 cloneURL: cloneURL,
                 commit: '',
-                state: 'available'
+                state: 'available',
             }),
         ]);
 
         const minuteAgo = secondsBefore(now.toISOString(), 60);
         const unabortedCount = await this.db.countUnabortedPrebuildsSince(cloneURL, new Date(minuteAgo));
-        expect(unabortedCount).to.eq(1)
+        expect(unabortedCount).to.eq(1);
     }
 
     private async storePrebuiltWorkspace(pws: PrebuiltWorkspace) {
         // store the creationTime directly, before it is modified by the store function in the ORM layer
-        const creationTime = pws.creationTime
-        await this.db.storePrebuiltWorkspace(pws)
+        const creationTime = pws.creationTime;
+        await this.db.storePrebuiltWorkspace(pws);
 
         const conn = await this.typeorm.getConnection();
         const repo = conn.getRepository(DBPrebuiltWorkspace);
@@ -574,16 +546,12 @@ class WorkspaceDBSpec {
         if (!!creationTime) {
             // MySQL requires the time format to be 2022-03-07 15:44:01.746141
             // Looks almost like an ISO time string, hack it a bit.
-            const mysqlTimeFormat = creationTime.replace("T", " ").replace("Z", "");
-            await repo.query("UPDATE d_b_prebuilt_workspace SET creationTime = ? WHERE id = ?", [mysqlTimeFormat, pws.id]);
+            const mysqlTimeFormat = creationTime.replace('T', ' ').replace('Z', '');
+            await repo.query('UPDATE d_b_prebuilt_workspace SET creationTime = ? WHERE id = ?', [
+                mysqlTimeFormat,
+                pws.id,
+            ]);
         }
     }
-=======
-    expect(dbResult[0].workspace.id).to.eq(this.ws2.id);
-    expect(dbResult[1].workspace.id).to.eq(this.ws3.id);
-  }
->>>>>>> 083c5c5e (Reformat gitpod-db with prettier)
-=======
->>>>>>> 3e7b850b (regen)
 }
 module.exports = new WorkspaceDBSpec();

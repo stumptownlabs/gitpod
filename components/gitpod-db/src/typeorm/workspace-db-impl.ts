@@ -4,24 +4,6 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-<<<<<<< HEAD
-import { injectable, inject } from "inversify";
-import { Repository, EntityManager, DeepPartial, UpdateQueryBuilder, Brackets } from "typeorm";
-import { MaybeWorkspace, MaybeWorkspaceInstance, WorkspaceDB, FindWorkspacesOptions, PrebuiltUpdatableAndWorkspace, WorkspaceInstanceSessionWithWorkspace, PrebuildWithWorkspace, WorkspaceAndOwner, WorkspacePortsAuthData, WorkspaceOwnerAndSoftDeleted } from "../workspace-db";
-import { Workspace, WorkspaceInstance, WorkspaceInfo, WorkspaceInstanceUser, WhitelistedRepository, Snapshot, LayoutData, PrebuiltWorkspace, RunningWorkspaceInfo, PrebuiltWorkspaceUpdatable, WorkspaceAndInstance, WorkspaceType, PrebuildInfo, AdminGetWorkspacesQuery, SnapshotState, PrebuiltWorkspaceState } from "@gitpod/gitpod-protocol";
-import { TypeORM } from "./typeorm";
-import { DBWorkspace } from "./entity/db-workspace";
-import { DBWorkspaceInstance } from "./entity/db-workspace-instance";
-import { DBLayoutData } from "./entity/db-layout-data";
-import { DBSnapshot } from "./entity/db-snapshot";
-import { DBWorkspaceInstanceUser } from "./entity/db-workspace-instance-user";
-import { DBRepositoryWhiteList } from "./entity/db-repository-whitelist";
-import { log } from "@gitpod/gitpod-protocol/lib/util/logging";
-import { DBPrebuiltWorkspace } from "./entity/db-prebuilt-workspace";
-import { DBPrebuiltWorkspaceUpdatable } from "./entity/db-prebuilt-workspace-updatable";
-import { BUILTIN_WORKSPACE_PROBE_USER_ID } from "../user-db";
-import { DBPrebuildInfo } from "./entity/db-prebuild-info-entry";
-=======
 import { injectable, inject } from 'inversify';
 import { Repository, EntityManager, DeepPartial, UpdateQueryBuilder, Brackets } from 'typeorm';
 import {
@@ -52,6 +34,7 @@ import {
     PrebuildInfo,
     AdminGetWorkspacesQuery,
     SnapshotState,
+    PrebuiltWorkspaceState,
 } from '@gitpod/gitpod-protocol';
 import { TypeORM } from './typeorm';
 import { DBWorkspace } from './entity/db-workspace';
@@ -65,7 +48,6 @@ import { DBPrebuiltWorkspace } from './entity/db-prebuilt-workspace';
 import { DBPrebuiltWorkspaceUpdatable } from './entity/db-prebuilt-workspace-updatable';
 import { BUILTIN_WORKSPACE_PROBE_USER_ID } from '../user-db';
 import { DBPrebuildInfo } from './entity/db-prebuild-info-entry';
->>>>>>> 3e7b850b (regen)
 
 type RawTo<T> = (instance: WorkspaceInstance, ws: Workspace) => T;
 interface OrderBy {
@@ -216,9 +198,7 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
             .addOrderBy('GREATEST(ws.creationTime, wsi.creationTime, wsi.startedTime, wsi.stoppedTime)', 'DESC')
             .limit(options.limit || 10);
         if (options.searchString) {
-            qb.andWhere('ws.description LIKE :searchString', {
-                searchString: `%${options.searchString}%`,
-            });
+            qb.andWhere('ws.description LIKE :searchString', { searchString: `%${options.searchString}%` });
         }
         if (!options.includeHeadless) {
             qb.andWhere("ws.type = 'regular'");
@@ -248,9 +228,7 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
                 }),
             );
         }
-        const rawResults = (await qb.getMany()) as any as (Workspace & {
-            latestInstance?: WorkspaceInstance;
-        })[]; // see leftJoinAndMapOne above
+        const rawResults = (await qb.getMany()) as any as (Workspace & { latestInstance?: WorkspaceInstance })[]; // see leftJoinAndMapOne above
         return rawResults.map((r) => {
             const workspace = { ...r };
             delete workspace.latestInstance;
@@ -670,9 +648,7 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
         const whitelist = await this.getRepositoryWhitelist();
         const allRepos = await whitelist
             .createQueryBuilder('rwl')
-            .where('rwl.priority >= :minPrio', {
-                minPrio: DBRepositoryWhiteList.MIN_FEATURED_REPOSITORY_PRIO,
-            })
+            .where('rwl.priority >= :minPrio', { minPrio: DBRepositoryWhiteList.MIN_FEATURED_REPOSITORY_PRIO })
             .orderBy('priority', 'DESC')
             .getMany();
         return allRepos.map((repo) => {
@@ -707,370 +683,6 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
         const snapshots = await this.getSnapshotRepo();
         const dbSnapshot = snapshot as DBSnapshot;
         return await snapshots.save(dbSnapshot);
-<<<<<<< HEAD
-    }
-
-    public async deleteSnapshot(snapshotId: string): Promise<void> {
-        const snapshots = await this.getSnapshotRepo();
-        await snapshots.delete(snapshotId);
-    }
-
-    public async updateSnapshot(snapshot: DeepPartial<Snapshot> & Pick<Snapshot, 'id'>): Promise<void> {
-        const snapshots = await this.getSnapshotRepo();
-        await snapshots.update(snapshot.id, snapshot);
-    }
-
-    public async findSnapshotsByWorkspaceId(workspaceId: string): Promise<Snapshot[]> {
-        const snapshots = await this.getSnapshotRepo();
-        return snapshots.find({ where: { originalWorkspaceId: workspaceId } });
-    }
-
-    public async storePrebuiltWorkspace(pws: PrebuiltWorkspace): Promise<PrebuiltWorkspace> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-        if (pws.error && pws.error.length > 255) {
-            pws.error = pws.error.substring(0, 251) + " ..."
-        }
-        return await repo.save(pws as DBPrebuiltWorkspace);
-    }
-
-    // Find the (last triggered) prebuild for a given commit
-    public async findPrebuiltWorkspaceByCommit(cloneURL: string, commit: string): Promise<PrebuiltWorkspace | undefined> {
-        if (!commit || !cloneURL) {
-            return undefined;
-        }
-        const repo = await this.getPrebuiltWorkspaceRepo();
-        return await repo.createQueryBuilder('pws')
-            .where('pws.cloneURL = :cloneURL AND pws.commit LIKE :commit', { cloneURL, commit: commit + '%' })
-            .orderBy('pws.creationTime', 'DESC')
-            .innerJoinAndMapOne('pws.workspace', DBWorkspace, 'ws', "pws.buildWorkspaceId = ws.id and ws.contentDeletedTime = ''")
-            .getOne();
-    }
-
-    public async findPrebuildByWorkspaceID(wsid: string): Promise<PrebuiltWorkspace | undefined> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-        return await repo.createQueryBuilder('pws')
-            .where('pws.buildWorkspaceId = :wsid', { wsid })
-            .getOne();
-    }
-    public async findPrebuildByID(pwsid: string): Promise<PrebuiltWorkspace | undefined> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-        return await repo.findOne(pwsid);
-    }
-    public async countRunningPrebuilds(cloneURL: string): Promise<number> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-        return await repo.createQueryBuilder('pws')
-            .where('pws.cloneURL = :cloneURL AND state = "building"', { cloneURL })
-            .getCount();
-    }
-
-    public async findPrebuildsWithWorkpace(cloneURL: string): Promise<PrebuildWithWorkspace[]> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-
-        let query = repo.createQueryBuilder('pws');
-        query = query.where('pws.cloneURL = :cloneURL', { cloneURL })
-        query = query.orderBy('pws.creationTime', 'DESC');
-        query = query.innerJoinAndMapOne('pws.workspace', DBWorkspace, 'ws', 'pws.buildWorkspaceId = ws.id');
-        query = query.where('ws.deleted = false');
-
-        const res = await query.getMany();
-        return res.map(r => {
-            const withWorkspace: PrebuiltWorkspace & { workspace: Workspace } = r as any;
-            return {
-                prebuild: r,
-                workspace: withWorkspace.workspace,
-            }
-        });
-    }
-
-    public async countUnabortedPrebuildsSince(cloneURL: string, date: Date): Promise<number> {
-        const abortedState: PrebuiltWorkspaceState = 'aborted';
-        const repo = await this.getPrebuiltWorkspaceRepo();
-
-        let query = repo.createQueryBuilder('pws');
-        query = query.where('pws.cloneURL = :cloneURL', { cloneURL })
-        query = query.andWhere('pws.creationTime >= :time', {time: date.toISOString()})
-        query = query.andWhere('pws.state != :state', { state: abortedState })
-        return query.getCount();
-    }
-
-    public async findQueuedPrebuilds(cloneURL?: string): Promise<PrebuildWithWorkspace[]> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-
-        let query = await repo.createQueryBuilder('pws');
-        query = query.where('state = "queued"');
-        if (cloneURL) {
-            query = query.andWhere('pws.cloneURL = :cloneURL', { cloneURL })
-        }
-        query = query.orderBy('pws.creationTime', 'ASC');
-        query = query.innerJoinAndMapOne('pws.workspace', DBWorkspace, 'ws', 'pws.buildWorkspaceId = ws.id');
-
-        const res = await query.getMany();
-        return res.map(r => {
-            const withWorkspace: PrebuiltWorkspace & { workspace: Workspace } = r as any;
-            return {
-                prebuild: r,
-                workspace: withWorkspace.workspace,
-            }
-        });
-    }
-    public async attachUpdatableToPrebuild(pwsid: string, update: PrebuiltWorkspaceUpdatable): Promise<void> {
-        const repo = await this.getPrebuiltWorkspaceUpdatableRepo();
-        await repo.save(update);
-    }
-    public async findUpdatablesForPrebuild(pwsid: string): Promise<PrebuiltWorkspaceUpdatable[]> {
-        const repo = await this.getPrebuiltWorkspaceUpdatableRepo();
-        return await repo.createQueryBuilder('pwsu')
-            .where('pwsu.prebuiltWorkspaceId = :pwsid', { pwsid })
-            .getMany();
-    }
-    public async markUpdatableResolved(updatableId: string): Promise<void> {
-        const repo = await this.getPrebuiltWorkspaceUpdatableRepo();
-        await repo.update(updatableId, { isResolved: true });
-    }
-    public async getUnresolvedUpdatables(): Promise<PrebuiltUpdatableAndWorkspace[]> {
-        const pwsuRepo = await this.getPrebuiltWorkspaceUpdatableRepo();
-
-        // select * from d_b_prebuilt_workspace_updatable as pwsu left join d_b_prebuilt_workspace pws ON pws.id = pwsu.prebuiltWorkspaceId left join d_b_workspace ws on pws.buildWorkspaceId = ws.id left join d_b_workspace_instance wsi on ws.id = wsi.workspaceId where pwsu.isResolved = 0
-        return await pwsuRepo.createQueryBuilder("pwsu")
-            .innerJoinAndMapOne('pwsu.prebuild', DBPrebuiltWorkspace, 'pws', 'pwsu.prebuiltWorkspaceId = pws.id')
-            .innerJoinAndMapOne('pwsu.workspace', DBWorkspace, 'ws', 'pws.buildWorkspaceId = ws.id')
-            .innerJoinAndMapOne('pwsu.instance', DBWorkspaceInstance, 'wsi', 'ws.id = wsi.workspaceId')
-            .where('pwsu.isResolved = 0')
-            .getMany() as any;
-    }
-
-    public async findLayoutDataByWorkspaceId(workspaceId: string): Promise<LayoutData | undefined> {
-        const layoutDataRepo = await this.getLayoutDataRepo();
-        return layoutDataRepo.findOne(workspaceId);
-    }
-
-    public async storeLayoutData(layoutData: LayoutData): Promise<LayoutData> {
-        const layoutDataRepo = await this.getLayoutDataRepo();
-        const dbLayoutData = layoutData as DBLayoutData;
-        return await layoutDataRepo.save(dbLayoutData);
-    }
-
-    /**
-     * This *hard deletes* the workspace entry and all corresponding workspace-instances, by triggering a db-sync mechanism that purges it from the DB.
-     * Note: when this function returns that doesn't mean that the entries are actually gone yet, that might still take a short while until db-sync comes
-     *       around to deleting them.
-     */
-    public async hardDeleteWorkspace(workspaceId: string): Promise<void> {
-        await (await this.getWorkspaceRepo()).update(workspaceId, { deleted: true });
-        await (await this.getWorkspaceInstanceRepo()).update({ workspaceId }, { deleted: true });
-    }
-
-    public async findAllWorkspaces(
-        offset: number,
-        limit: number,
-        orderBy: keyof Workspace,
-        orderDir: "ASC" | "DESC",
-        ownerId?: string,
-        searchTerm?: string,
-        minCreationTime?: Date,
-        maxCreationTime?: Date,
-        type?: WorkspaceType
-    ): Promise<{ total: number, rows: Workspace[] }> {
-        const workspaceRepo = await this.getWorkspaceRepo();
-        const queryBuilder = workspaceRepo.createQueryBuilder("ws")
-            .skip(offset)
-            .take(limit)
-            .orderBy(orderBy, orderDir)
-            .where("ws.type = :type", { type: type ? type.toString() : "regular" }); // only regular workspaces by default
-        if (ownerId) {
-            queryBuilder.andWhere("ownerId = :ownerId", { ownerId });
-        }
-        if (searchTerm) {
-            queryBuilder.andWhere("(contextURL LIKE :searchTerm OR description LIKE :searchTerm)", { searchTerm });
-        }
-        if (minCreationTime) {
-            queryBuilder.andWhere("creationTime >= :minCreationTime", { minCreationTime: minCreationTime.toISOString() });
-        }
-        if (maxCreationTime) {
-            queryBuilder.andWhere("creationTime < :maxCreationTime", { maxCreationTime: maxCreationTime.toISOString() });
-        }
-        const [rows, total] = await queryBuilder.getManyAndCount();
-        return { total, rows };
-    }
-
-    public async getWorkspaceCount(type?: String): Promise<Number> {
-        const workspaceRepo = await this.getWorkspaceRepo();
-        const queryBuilder = workspaceRepo.createQueryBuilder("ws")
-            .where("ws.type = :type", { type: type ? type.toString() : "regular" }); // only regular workspaces by default
-
-        return await queryBuilder.getCount();
-    }
-
-    public async findAllWorkspaceAndInstances(offset: number, limit: number, orderBy: keyof WorkspaceAndInstance, orderDir: "ASC" | "DESC", query?: AdminGetWorkspacesQuery): Promise<{ total: number, rows: WorkspaceAndInstance[] }> {
-        let whereConditions = [];
-        let whereConditionParams: any = {};
-        let instanceIdQuery: boolean = false;
-
-        if (query) {
-            // from most to least specific so we don't generalize accidentally
-            if (query.instanceIdOrWorkspaceId) {
-                whereConditions.push("(wsi.id = :instanceId OR ws.id = :workspaceId)");
-                whereConditionParams.instanceId = query.instanceIdOrWorkspaceId;
-                whereConditionParams.workspaceId = query.instanceIdOrWorkspaceId;
-            } else if (query.workspaceId) {
-                whereConditions.push("ws.id = :workspaceId");
-                whereConditionParams.workspaceId = query.workspaceId;
-            } else if (query.ownerId) {
-                // If an owner id is provided only search for workspaces belonging to that user.
-                whereConditions.push("ws.ownerId = :ownerId");
-                whereConditionParams.ownerId = query.ownerId;
-            } else if (query.instanceId) {
-                // in addition to adding "instanceId" to the "WHERE" clause like for the other workspace-guided queries,
-                // we modify the JOIN condition below to a) select the correct instance and b) make the query faster
-                instanceIdQuery = true;
-
-                whereConditions.push("wsi.id = :instanceId");
-                whereConditionParams.instanceId = query.instanceId;
-            }
-        }
-
-        let orderField: string = orderBy;
-        switch (orderField) {
-            case "workspaceId": orderField = "ws.id"; break;
-            case "instanceId": orderField = "wsi.id"; break;
-            case "contextURL": orderField = "ws.contextURL"; break;
-            case "workspaceCreationTime": orderField = "ws.creationTime"; break;
-            case "instanceCreationTime": orderField = "wsi.creationTime"; break;
-            case "phase": orderField = "wsi.status->>phase"; break;
-            case "ownerId": orderField = "wsi.ownerId"; break;
-        }
-
-        // We need to select the latest wsi for a workspace. It's the same problem we have in 'find' (the "/workspaces" query, see above), so we use the same approach.
-        // Only twist is that we might be searching for an instance directly ('instanceIdQuery').
-        const workspaceRepo = await this.getWorkspaceRepo();
-        let qb = workspaceRepo
-            .createQueryBuilder('ws')
-            // We need to put the subquery into the join condition (ON) here to be able to reference `ws.id` which is
-            // not possible in a subquery on JOIN (e.g. 'LEFT JOIN (SELECT ... WHERE i.workspaceId = ws.id)')
-            .leftJoinAndMapOne('ws.instance', DBWorkspaceInstance, 'wsi',
-                `${instanceIdQuery ? "wsi.workspaceId = ws.id" : "wsi.id = (SELECT i.id FROM d_b_workspace_instance AS i WHERE i.workspaceId = ws.id ORDER BY i.creationTime DESC LIMIT 1)"}`
-            )
-            .where(whereConditions.join(' AND '), whereConditionParams)
-            .orderBy(orderField, orderDir)
-            .take(limit)
-            .skip(offset);
-
-        const rawResult = (await qb.getMany()) as InstanceJoinResult[];
-        const total = await qb.getCount();
-        const rows = (rawResult as InstanceJoinResult[]).map(r => {
-            const res = {
-                ...r,
-                ...r.instance,
-                workspaceId: r.id,
-                instanceId: r.instance.id,
-                workspaceCreationTime: r.creationTime,
-                instanceCreationTime: r.instance.creationTime,
-                phase: r.instance.status.phase,
-            };
-            // @ts-ignore
-            delete res["id"];
-            // @ts-ignore
-            delete res["creationTime"];
-            // @ts-ignore
-            delete res["instance"];
-
-            return <WorkspaceAndInstance>(res);
-        });
-
-        return { rows, total };
-    }
-
-    async findWorkspaceAndInstance(id: string): Promise<WorkspaceAndInstance | undefined> {
-        const workspaceRepo = await this.getWorkspaceRepo();
-        const workspace = await workspaceRepo.findOne(id);
-        if (!workspace) {
-            return;
-        }
-
-        const instance = await this.findCurrentInstance(id);
-        if (!instance) {
-            return;
-        }
-
-        const res = {
-            ...workspace,
-            ...instance,
-            workspaceId: workspace.id,
-            instanceId: instance.id,
-            workspaceCreationTime: workspace.creationTime,
-            instanceCreationTime: instance.creationTime,
-            phase: instance.status.phase,
-        };
-        // @ts-ignore
-        delete res["id"];
-        // @ts-ignore
-        delete res["creationTime"];
-
-        return <WorkspaceAndInstance>(res);
-    }
-
-    async findInstancesByPhaseAndRegion(phase: string, region: string): Promise<WorkspaceInstance[]> {
-        const repo = await this.getWorkspaceInstanceRepo();
-        // uses index: ind_phasePersisted_region
-        const qb = repo.createQueryBuilder("wsi")
-            .where("wsi.phasePersisted = :phase", { phase })
-            .andWhere("wsi.region = :region", { region });
-        return qb.getMany();
-    }
-
-    async findPrebuiltWorkspacesByProject(projectId: string, branch?: string, limit?: number): Promise<PrebuiltWorkspace[]> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-
-        const query = repo.createQueryBuilder('pws')
-            .orderBy('pws.creationTime', 'DESC')
-            .innerJoinAndMapOne('pws.workspace', DBWorkspace, 'ws', 'pws.buildWorkspaceId = ws.id')
-            .andWhere('pws.projectId = :projectId', { projectId });
-
-        if (branch) {
-            query.andWhere('pws.branch = :branch', { branch });
-        }
-        if (limit) {
-            query.limit(limit);
-        }
-
-        const res = await query.getMany();
-        return res;
-    }
-
-    async findPrebuiltWorkspaceById(id: string): Promise<PrebuiltWorkspace | undefined> {
-        const repo = await this.getPrebuiltWorkspaceRepo();
-
-        const query = repo.createQueryBuilder('pws')
-            .orderBy('pws.creationTime', 'DESC')
-            .innerJoinAndMapOne('pws.workspace', DBWorkspace, 'ws', 'pws.buildWorkspaceId = ws.id')
-            .andWhere('pws.id = :id', { id });
-
-        return query.getOne();
-    }
-
-    async storePrebuildInfo(prebuildInfo: PrebuildInfo): Promise<void> {
-        const repo = await this.getPrebuildInfoRepo();
-        await repo.save({
-            prebuildId: prebuildInfo.id,
-            info: prebuildInfo
-        });
-    }
-
-    async findPrebuildInfos(prebuildIds: string[]): Promise<PrebuildInfo[]> {
-        const repo = await this.getPrebuildInfoRepo();
-
-        const query = repo.createQueryBuilder('pi');
-
-        const filteredIds = prebuildIds.filter(id => !!id);
-        if (filteredIds.length === 0) {
-            return [];
-        }
-        query.andWhere(`pi.prebuildId in (${filteredIds.map(id => `'${id}'`).join(", ")})`)
-
-        const res = await query.getMany();
-        return res.map(r => r.info);
-=======
->>>>>>> 3e7b850b (regen)
     }
 
     public async deleteSnapshot(snapshotId: string): Promise<void> {
@@ -1107,10 +719,7 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
         const repo = await this.getPrebuiltWorkspaceRepo();
         return await repo
             .createQueryBuilder('pws')
-            .where('pws.cloneURL = :cloneURL AND pws.commit LIKE :commit', {
-                cloneURL,
-                commit: commit + '%',
-            })
+            .where('pws.cloneURL = :cloneURL AND pws.commit LIKE :commit', { cloneURL, commit: commit + '%' })
             .orderBy('pws.creationTime', 'DESC')
             .innerJoinAndMapOne(
                 'pws.workspace',
@@ -1142,8 +751,9 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
 
         let query = repo.createQueryBuilder('pws');
         query = query.where('pws.cloneURL = :cloneURL', { cloneURL });
-        query = query.orderBy('pws.creationTime', 'ASC');
+        query = query.orderBy('pws.creationTime', 'DESC');
         query = query.innerJoinAndMapOne('pws.workspace', DBWorkspace, 'ws', 'pws.buildWorkspaceId = ws.id');
+        query = query.where('ws.deleted = false');
 
         const res = await query.getMany();
         return res.map((r) => {
@@ -1153,6 +763,17 @@ export abstract class AbstractTypeORMWorkspaceDBImpl implements WorkspaceDB {
                 workspace: withWorkspace.workspace,
             };
         });
+    }
+
+    public async countUnabortedPrebuildsSince(cloneURL: string, date: Date): Promise<number> {
+        const abortedState: PrebuiltWorkspaceState = 'aborted';
+        const repo = await this.getPrebuiltWorkspaceRepo();
+
+        let query = repo.createQueryBuilder('pws');
+        query = query.where('pws.cloneURL = :cloneURL', { cloneURL });
+        query = query.andWhere('pws.creationTime >= :time', { time: date.toISOString() });
+        query = query.andWhere('pws.state != :state', { state: abortedState });
+        return query.getCount();
     }
 
     public async findQueuedPrebuilds(cloneURL?: string): Promise<PrebuildWithWorkspace[]> {
