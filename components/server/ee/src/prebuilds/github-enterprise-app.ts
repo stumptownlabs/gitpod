@@ -5,7 +5,8 @@
  */
 
 import * as express from 'express';
-import { createHmac } from 'crypto';
+import { Buffer } from 'buffer';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { postConstruct, injectable, inject } from 'inversify';
 import { ProjectDB, TeamDB, UserDB } from '@gitpod/gitpod-db/lib';
 import { PrebuildManager } from '../prebuilds/prebuild-manager';
@@ -90,7 +91,7 @@ export class GitHubEnterpriseApp {
                 const sig = 'sha256=' + createHmac('sha256', user.id + '|' + tokenEntry.token.value)
                     .update(body)
                     .digest('hex');
-                return sig === signature;
+                return timingSafeEqual(Buffer.from(sig), Buffer.from(signature ?? ''));
             });
             if (!signingToken) {
                 throw new Error(`User ${user.id} has no token matching the payload signature.`);
