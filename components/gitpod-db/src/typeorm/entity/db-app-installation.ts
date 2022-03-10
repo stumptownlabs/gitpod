@@ -4,13 +4,13 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Column, PrimaryColumn, Entity, Index } from 'typeorm';
-import { AppInstallation, AppInstallationPlatform, AppInstallationState } from '@gitpod/gitpod-protocol';
-import { TypeORM } from '../typeorm';
-import { Transformer } from '../transformer';
+import { Column, PrimaryColumn, Entity, Index } from "typeorm";
+import { AppInstallation, AppInstallationPlatform, AppInstallationState } from "@gitpod/gitpod-protocol";
+import { TypeORM } from "../typeorm";
+import { Transformer } from "../transformer";
 
 @Entity()
-@Index('ind_dbsync', ['creationTime']) // DBSync
+@Index("ind_dbsync", ["creationTime"]) // DBSync
 export class DBAppInstallation implements AppInstallation {
     @PrimaryColumn()
     platform: AppInstallationPlatform;
@@ -31,17 +31,17 @@ export class DBAppInstallation implements AppInstallation {
     state: AppInstallationState;
 
     @Column({
-        type: 'timestamp',
+        type: "timestamp",
         precision: 6,
-        default: () => 'CURRENT_TIMESTAMP(6)',
+        default: () => "CURRENT_TIMESTAMP(6)",
         transformer: Transformer.MAP_ISO_STRING_TO_TIMESTAMP_DROP,
     })
     creationTime: string;
 
     @Column({
-        type: 'timestamp',
+        type: "timestamp",
         precision: 6,
-        default: () => 'CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)',
+        default: () => "CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)",
         transformer: Transformer.MAP_ISO_STRING_TO_TIMESTAMP_DROP,
     })
     lastUpdateTime: string;

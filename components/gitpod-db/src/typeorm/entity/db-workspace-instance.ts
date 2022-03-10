@@ -4,7 +4,7 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { PrimaryColumn, Column, Index, Entity } from 'typeorm';
+import { PrimaryColumn, Column, Index, Entity } from "typeorm";
 
 import {
     WorkspaceInstance,
@@ -12,13 +12,13 @@ import {
     WorkspaceInstancePhase,
     WorkspaceInstanceConfiguration,
     ImageBuildInfo,
-} from '@gitpod/gitpod-protocol';
-import { TypeORM } from '../typeorm';
-import { Transformer } from '../transformer';
+} from "@gitpod/gitpod-protocol";
+import { TypeORM } from "../typeorm";
+import { Transformer } from "../transformer";
 
 @Entity()
-@Index('ind_find_wsi_ws_in_period', ['workspaceId', 'startedTime', 'stoppedTime']) // findInstancesWithWorkspaceInPeriod
-@Index('ind_phasePersisted_region', ['phasePersisted', 'region']) // findInstancesByPhaseAndRegion
+@Index("ind_find_wsi_ws_in_period", ["workspaceId", "startedTime", "stoppedTime"]) // findInstancesWithWorkspaceInPeriod
+@Index("ind_phasePersisted_region", ["phasePersisted", "region"]) // findInstancesByPhaseAndRegion
 // on DB but not Typeorm: @Index("ind_lastModified", ["_lastModified"])   // DBSync
 export class DBWorkspaceInstance implements WorkspaceInstance {
     @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
@@ -35,13 +35,13 @@ export class DBWorkspaceInstance implements WorkspaceInstance {
     creationTime: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     startedTime?: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     deployedTime?: string;
@@ -51,7 +51,7 @@ export class DBWorkspaceInstance implements WorkspaceInstance {
      * began to shut down on the cluster.
      */
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     stoppingTime?: string;
@@ -61,7 +61,7 @@ export class DBWorkspaceInstance implements WorkspaceInstance {
      * was actually stopped on the cluster.
      */
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     stoppedTime?: string;
@@ -72,7 +72,7 @@ export class DBWorkspaceInstance implements WorkspaceInstance {
     @Column()
     workspaceImage: string;
 
-    @Column('json')
+    @Column("json")
     status: WorkspaceInstanceStatus;
 
     /**
@@ -80,7 +80,7 @@ export class DBWorkspaceInstance implements WorkspaceInstance {
      * Is replicated inside workspace-db-impl.ts/storeInstance.
      */
     @Column()
-    @Index('ind_phasePersisted')
+    @Index("ind_phasePersisted")
     phasePersisted: WorkspaceInstancePhase;
 
     // This column triggers the db-sync deletion mechanism. It's not intended for public consumption.
@@ -88,11 +88,11 @@ export class DBWorkspaceInstance implements WorkspaceInstance {
     deleted?: boolean;
 
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         nullable: true,
     })
     configuration?: WorkspaceInstanceConfiguration;
 
-    @Column('simple-json', { nullable: true })
+    @Column("simple-json", { nullable: true })
     imageBuildInfo?: ImageBuildInfo;
 }

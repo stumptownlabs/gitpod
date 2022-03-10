@@ -4,12 +4,12 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import uuid = require('uuid');
-import * as chai from 'chai';
-import { suite, test, timeout } from 'mocha-typescript';
-import { testContainer } from '../test-container';
-import { CodeSyncResourceDB } from './code-sync-resource-db';
-import { IUserDataManifest, SyncResource } from './entity/db-code-sync-resource';
+import uuid = require("uuid");
+import * as chai from "chai";
+import { suite, test, timeout } from "mocha-typescript";
+import { testContainer } from "../test-container";
+import { CodeSyncResourceDB } from "./code-sync-resource-db";
+import { IUserDataManifest, SyncResource } from "./entity/db-code-sync-resource";
 const expect = chai.expect;
 
 @suite(timeout(10000))
@@ -31,8 +31,8 @@ export class CodeSyncResourceDBSpec {
         const doInsert = async () => {
             inserted = true;
         };
-        const kind = 'machines';
-        let latest = await this.db.getResource(this.userId, kind, 'latest');
+        const kind = "machines";
+        let latest = await this.db.getResource(this.userId, kind, "latest");
         expect(latest).to.be.undefined;
 
         let inserted = false;
@@ -40,7 +40,7 @@ export class CodeSyncResourceDBSpec {
         expect(rev).not.to.be.undefined;
         expect(inserted).to.be.true;
 
-        latest = await this.db.getResource(this.userId, kind, 'latest');
+        latest = await this.db.getResource(this.userId, kind, "latest");
         expect(latest?.rev).to.deep.equal(rev);
 
         const resource = await this.db.getResource(this.userId, kind, rev!);
@@ -64,7 +64,7 @@ export class CodeSyncResourceDBSpec {
 
     @test()
     async getResources(): Promise<void> {
-        const kind = 'machines';
+        const kind = "machines";
         let resources = await this.db.getResources(this.userId, kind);
         expect(resources).to.be.empty;
 
@@ -86,7 +86,7 @@ export class CodeSyncResourceDBSpec {
             latest: {},
         });
 
-        let machinesRev = await this.db.insert(this.userId, 'machines', async () => {});
+        let machinesRev = await this.db.insert(this.userId, "machines", async () => {});
         manifest = await this.db.getManifest(this.userId);
         expect(manifest).to.deep.eq(<IUserDataManifest>{
             session: this.userId,
@@ -105,7 +105,7 @@ export class CodeSyncResourceDBSpec {
             },
         });
 
-        machinesRev = await this.db.insert(this.userId, 'machines', async () => {});
+        machinesRev = await this.db.insert(this.userId, "machines", async () => {});
         manifest = await this.db.getManifest(this.userId);
         expect(manifest).to.deep.eq(<IUserDataManifest>{
             session: this.userId,
@@ -118,7 +118,7 @@ export class CodeSyncResourceDBSpec {
 
     @test()
     async roundRobinInsert(): Promise<void> {
-        const kind = 'machines';
+        const kind = "machines";
         const expectation: string[] = [];
         const doInsert = async () => {};
         const revLimit = 3;

@@ -4,10 +4,10 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { Entity, Column, PrimaryColumn } from 'typeorm';
-import { PrebuildInfo } from '@gitpod/gitpod-protocol';
+import { Entity, Column, PrimaryColumn } from "typeorm";
+import { PrebuildInfo } from "@gitpod/gitpod-protocol";
 
-import { TypeORM } from '../../typeorm/typeorm';
+import { TypeORM } from "../../typeorm/typeorm";
 
 @Entity()
 export class DBPrebuildInfo {
@@ -15,7 +15,7 @@ export class DBPrebuildInfo {
     prebuildId: string;
 
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         transformer: (() => {
             return {
                 to(value: any): any {

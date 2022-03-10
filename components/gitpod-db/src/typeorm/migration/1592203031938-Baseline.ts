@@ -4,9 +4,9 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
-import { BUILTIN_WORKSPACE_PROBE_USER_ID } from '../../user-db';
+import { BUILTIN_WORKSPACE_PROBE_USER_ID } from "../../user-db";
 
 export class Baseline1592203031938 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
@@ -54,37 +54,37 @@ export class Baseline1592203031938 implements MigrationInterface {
             if (Number.parseInt(count) < 1) {
                 const entries = [
                     {
-                        url: 'https://github.com/gitpod-io/go-gin-app.git',
-                        description: '**Go** - A simple web app implemented in Go and Gin',
+                        url: "https://github.com/gitpod-io/go-gin-app.git",
+                        description: "**Go** - A simple web app implemented in Go and Gin",
                         priority: 7,
                     },
                     {
-                        url: 'https://github.com/gitpod-io/rails_sample_app',
-                        description: '**Ruby on Rails** - Tutorial sample application',
+                        url: "https://github.com/gitpod-io/rails_sample_app",
+                        description: "**Ruby on Rails** - Tutorial sample application",
                         priority: 6,
                     },
                     {
-                        url: 'https://github.com/gitpod-io/NextSimpleStarter.git',
-                        description: '**JavaScript** - Simple PWA boilerplate with Next.js and Redux',
+                        url: "https://github.com/gitpod-io/NextSimpleStarter.git",
+                        description: "**JavaScript** - Simple PWA boilerplate with Next.js and Redux",
                         priority: 8,
                     },
                     {
-                        url: 'https://github.com/gitpod-io/django-locallibrary-tutorial',
+                        url: "https://github.com/gitpod-io/django-locallibrary-tutorial",
                         description: '**Python** - Tutorial "Local Library" website written in Django',
                         priority: 10,
                     },
                     {
-                        url: 'https://github.com/gitpod-io/gs-spring-boot.git',
-                        description: '**Java** - Building an Application with Spring Boot',
+                        url: "https://github.com/gitpod-io/gs-spring-boot.git",
+                        description: "**Java** - Building an Application with Spring Boot",
                         priority: 9,
                     },
                     {
-                        url: 'https://github.com/gitpod-io/symfony-demo.git',
-                        description: '**PHP** - Symfony Demo Application',
+                        url: "https://github.com/gitpod-io/symfony-demo.git",
+                        description: "**PHP** - Symfony Demo Application",
                         priority: 5,
                     },
                     {
-                        url: 'https://github.com/theia-ide/theia.git',
+                        url: "https://github.com/theia-ide/theia.git",
                         description: "**Typescript** - Deep dive into Gitpod\\'s open-source IDE, Theia.",
                         priority: 4,
                     },
@@ -103,11 +103,11 @@ export class Baseline1592203031938 implements MigrationInterface {
         // domain filters
         {
             const entries = [
-                { domain: 'tempail.com', negative: true },
-                { domain: 'ezehe.com', negative: true },
-                { domain: 'radiodale.com', negative: true },
+                { domain: "tempail.com", negative: true },
+                { domain: "ezehe.com", negative: true },
+                { domain: "radiodale.com", negative: true },
             ];
-            const values = entries.map((e) => `('${e.domain}', '${e.negative ? 1 : 0}')`).join(',');
+            const values = entries.map((e) => `('${e.domain}', '${e.negative ? 1 : 0}')`).join(",");
             await queryRunner.query(`INSERT IGNORE INTO d_b_email_domain_filter (domain, negative) VALUES ${values}`);
         }
 

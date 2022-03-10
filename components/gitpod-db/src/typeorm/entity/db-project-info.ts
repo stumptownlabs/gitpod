@@ -4,10 +4,10 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { Entity, Column, PrimaryColumn } from 'typeorm';
-import { Project } from '@gitpod/gitpod-protocol';
+import { Entity, Column, PrimaryColumn } from "typeorm";
+import { Project } from "@gitpod/gitpod-protocol";
 
-import { TypeORM } from '../../typeorm/typeorm';
+import { TypeORM } from "../../typeorm/typeorm";
 
 @Entity()
 // on DB but not Typeorm: @Index("ind_dbsync", ["_lastModified"])   // DBSync
@@ -16,7 +16,7 @@ export class DBProjectInfo {
     projectId: string;
 
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         transformer: (() => {
             return {
                 to(value: any): any {

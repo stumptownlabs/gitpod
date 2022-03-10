@@ -4,11 +4,11 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { inject, injectable } from 'inversify';
-import { OssAllowListDB } from '../oss-allowlist-db';
-import { TypeORM } from './typeorm';
-import { Repository } from 'typeorm';
-import { DBOssAllowList } from './entity/db-oss-allowlist';
+import { inject, injectable } from "inversify";
+import { OssAllowListDB } from "../oss-allowlist-db";
+import { TypeORM } from "./typeorm";
+import { Repository } from "typeorm";
+import { DBOssAllowList } from "./entity/db-oss-allowlist";
 
 @injectable()
 export class OssAllowListDBImpl implements OssAllowListDB {

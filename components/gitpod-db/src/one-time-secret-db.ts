@@ -4,7 +4,7 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-export const OneTimeSecretDB = Symbol('OneTimeSecretDB');
+export const OneTimeSecretDB = Symbol("OneTimeSecretDB");
 
 export interface OneTimeSecretDB {
     /**

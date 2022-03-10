@@ -4,11 +4,11 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Repository, EntityManager } from 'typeorm';
-import { injectable, inject } from 'inversify';
-import { TypeORM } from './typeorm';
-import { UserStorageResourcesDB } from '../user-storage-resources-db';
-import { DBUserStorageResource } from './entity/db-user-storage-resource';
+import { Repository, EntityManager } from "typeorm";
+import { injectable, inject } from "inversify";
+import { TypeORM } from "./typeorm";
+import { UserStorageResourcesDB } from "../user-storage-resources-db";
+import { DBUserStorageResource } from "./entity/db-user-storage-resource";
 
 @injectable()
 export class TypeORMUserStorageResourcesDBImpl implements UserStorageResourcesDB {
@@ -24,7 +24,7 @@ export class TypeORMUserStorageResourcesDBImpl implements UserStorageResourcesDB
 
     async get(userId: string, uri: string): Promise<string> {
         const resource = await this.getResource(userId, uri);
-        const content = resource ? resource.content : '';
+        const content = resource ? resource.content : "";
         return content;
     }
 
@@ -52,8 +52,8 @@ export class TypeORMUserStorageResourcesDBImpl implements UserStorageResourcesDB
     protected async getResource(userId: string, uri: string): Promise<DBUserStorageResource | undefined> {
         const repo = await this.getUserStorageResourceRepo();
         let query = repo
-            .createQueryBuilder('resource')
-            .where('resource.uri = :uri AND resource.userId = :userId', { userId: userId, uri: uri });
+            .createQueryBuilder("resource")
+            .where("resource.uri = :uri AND resource.userId = :userId", { userId: userId, uri: uri });
         const resource = await query.getOne();
         return resource;
     }

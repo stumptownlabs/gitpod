@@ -4,9 +4,9 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { InstallationAdmin, InstallationAdminSettings } from '@gitpod/gitpod-protocol';
+import { InstallationAdmin, InstallationAdminSettings } from "@gitpod/gitpod-protocol";
 
-export const InstallationAdminDB = Symbol('InstallationAdminDB');
+export const InstallationAdminDB = Symbol("InstallationAdminDB");
 export interface InstallationAdminDB {
     getData(): Promise<InstallationAdmin>;
     setSettings(settings: Partial<InstallationAdminSettings>): Promise<void>;

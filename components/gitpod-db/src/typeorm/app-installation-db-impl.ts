@@ -4,14 +4,14 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { AppInstallation, AppInstallationPlatform, AppInstallationState } from '@gitpod/gitpod-protocol';
-import { injectable, inject } from 'inversify';
-import { TypeORM } from './typeorm';
+import { AppInstallation, AppInstallationPlatform, AppInstallationState } from "@gitpod/gitpod-protocol";
+import { injectable, inject } from "inversify";
+import { TypeORM } from "./typeorm";
 
-import { AppInstallationDB } from '../app-installation-db';
-import { Repository } from 'typeorm';
-import { DBAppInstallation } from './entity/db-app-installation';
-import { log } from '@gitpod/gitpod-protocol/lib/util/logging';
+import { AppInstallationDB } from "../app-installation-db";
+import { Repository } from "typeorm";
+import { DBAppInstallation } from "./entity/db-app-installation";
+import { log } from "@gitpod/gitpod-protocol/lib/util/logging";
 
 @injectable()
 export class TypeORMAppInstallationDBImpl implements AppInstallationDB {
@@ -27,7 +27,7 @@ export class TypeORMAppInstallationDBImpl implements AppInstallationDB {
 
     public async recordNewInstallation(
         platform: AppInstallationPlatform,
-        source: 'user' | 'platform',
+        source: "user" | "platform",
         installationID: string,
         ownerUserID?: string,
         platformUserID?: string,
@@ -50,10 +50,10 @@ export class TypeORMAppInstallationDBImpl implements AppInstallationDB {
     ): Promise<AppInstallation | undefined> {
         const repo = await this.getRepo();
         const qb = repo
-            .createQueryBuilder('installation')
-            .where('installation.installationID = :installationID', { installationID })
+            .createQueryBuilder("installation")
+            .where("installation.installationID = :installationID", { installationID })
             .andWhere('installation.state != "uninstalled"')
-            .orderBy('installation.lastUpdateTime', 'DESC')
+            .orderBy("installation.lastUpdateTime", "DESC")
             .limit(1);
 
         return (await qb.getMany())[0];
@@ -61,16 +61,16 @@ export class TypeORMAppInstallationDBImpl implements AppInstallationDB {
 
     public async recordUninstallation(
         platform: AppInstallationPlatform,
-        source: 'user' | 'platform',
+        source: "user" | "platform",
         installationID: string,
     ) {
         const installation = await this.findInstallation(platform, installationID);
         if (!installation) {
-            log.warn('Cannot record uninstallation of non-existent installation', { platform, installationID });
+            log.warn("Cannot record uninstallation of non-existent installation", { platform, installationID });
             return;
         }
 
-        installation.state = 'uninstalled';
+        installation.state = "uninstalled";
 
         const repo = await this.getRepo();
         await repo.save(installation);

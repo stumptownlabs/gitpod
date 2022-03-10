@@ -4,15 +4,15 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import * as chai from 'chai';
+import * as chai from "chai";
 const expect = chai.expect;
-import { suite, test, timeout } from 'mocha-typescript';
+import { suite, test, timeout } from "mocha-typescript";
 
-import { testContainer } from './test-container';
-import { TypeORM } from './typeorm/typeorm';
-import { DBUserMessageViewEntry } from './typeorm/entity/db-user-message-view-entry';
-import { Repository } from 'typeorm';
-import { UserMessageViewsDB } from './user-message-views-db';
+import { testContainer } from "./test-container";
+import { TypeORM } from "./typeorm/typeorm";
+import { DBUserMessageViewEntry } from "./typeorm/entity/db-user-message-view-entry";
+import { Repository } from "typeorm";
+import { UserMessageViewsDB } from "./user-message-views-db";
 
 @suite
 class UserMessageViewsDBSpec {
@@ -33,19 +33,19 @@ class UserMessageViewsDBSpec {
 
     async wipeRepo() {
         const repo = await this.getUserMessageViewsRepo();
-        await repo.createQueryBuilder('view').delete().execute();
+        await repo.createQueryBuilder("view").delete().execute();
     }
 
     @test(timeout(10000))
     public async testSimple11() {
-        const viewed = await this.viewsdb.didViewMessage('user1', 'message1');
+        const viewed = await this.viewsdb.didViewMessage("user1", "message1");
         expect(viewed).to.be.false;
     }
 
     @test(timeout(10000))
     public async testSimple2() {
-        await this.viewsdb.markAsViewed('user1', ['message1']);
-        const viewed = await this.viewsdb.didViewMessage('user1', 'message1');
+        await this.viewsdb.markAsViewed("user1", ["message1"]);
+        const viewed = await this.viewsdb.didViewMessage("user1", "message1");
         expect(viewed).to.be.true;
     }
 }

@@ -4,17 +4,17 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { AuthProviderEntry } from '@gitpod/gitpod-protocol';
-import { MigrationInterface, QueryRunner } from 'typeorm';
-import { dbContainerModule } from '../../container-module';
-import { columnExists, indexExists } from './helper/helper';
-import { Container } from 'inversify';
-import { AuthProviderEntryDB } from '../../auth-provider-entry-db';
-import { UserDB } from '../../user-db';
+import { AuthProviderEntry } from "@gitpod/gitpod-protocol";
+import { MigrationInterface, QueryRunner } from "typeorm";
+import { dbContainerModule } from "../../container-module";
+import { columnExists, indexExists } from "./helper/helper";
+import { Container } from "inversify";
+import { AuthProviderEntryDB } from "../../auth-provider-entry-db";
+import { UserDB } from "../../user-db";
 
-const TABLE_NAME = 'd_b_auth_provider_entry';
-const COLUMN_NAME: keyof AuthProviderEntry = 'oauthRevision';
-const INDEX_NAME = 'ind_oauthRevision';
+const TABLE_NAME = "d_b_auth_provider_entry";
+const COLUMN_NAME: keyof AuthProviderEntry = "oauthRevision";
+const INDEX_NAME = "ind_oauthRevision";
 
 export class OAuthRevision1643986994402 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {

@@ -4,16 +4,16 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import * as chai from 'chai';
+import * as chai from "chai";
 const expect = chai.expect;
-import { suite, test } from 'mocha-typescript';
-import { TypeORM } from './typeorm/typeorm';
-import { TypeORMUserDBImpl } from './typeorm/user-db-impl';
-import { testContainer } from './test-container';
-import { ProjectDBImpl } from './typeorm/project-db-impl';
-import { DBProject } from './typeorm/entity/db-project';
-import { DBUser } from './typeorm/entity/db-user';
-import { Project } from '@gitpod/gitpod-protocol';
+import { suite, test } from "mocha-typescript";
+import { TypeORM } from "./typeorm/typeorm";
+import { TypeORMUserDBImpl } from "./typeorm/user-db-impl";
+import { testContainer } from "./test-container";
+import { ProjectDBImpl } from "./typeorm/project-db-impl";
+import { DBProject } from "./typeorm/entity/db-project";
+import { DBUser } from "./typeorm/entity/db-user";
+import { Project } from "@gitpod/gitpod-protocol";
 
 @suite
 class ProjectDBSpec {
@@ -39,23 +39,23 @@ class ProjectDBSpec {
     public async findProjectBySearchTerm() {
         const user = await this.userDb.newUser();
         user.identities.push({
-            authProviderId: 'GitHub',
-            authId: '1234',
-            authName: 'newUser',
-            primaryEmail: 'newuser@git.com',
+            authProviderId: "GitHub",
+            authId: "1234",
+            authName: "newUser",
+            primaryEmail: "newuser@git.com",
         });
         await this.userDb.storeUser(user);
 
         const project = Project.create({
-            name: 'some-project',
-            slug: 'some-project',
-            cloneUrl: 'some-random-clone-url',
+            name: "some-project",
+            slug: "some-project",
+            cloneUrl: "some-random-clone-url",
             userId: user.id,
-            appInstallationId: 'app-1',
+            appInstallationId: "app-1",
         });
-        const searchTerm = 'rand';
+        const searchTerm = "rand";
         const storedProject = await this.projectDb.storeProject(project);
-        const foundProject = await this.projectDb.findProjectsBySearchTerm(0, 10, 'creationTime', 'DESC', searchTerm);
+        const foundProject = await this.projectDb.findProjectsBySearchTerm(0, 10, "creationTime", "DESC", searchTerm);
 
         expect(foundProject.rows[0].id).to.eq(storedProject.id);
     }

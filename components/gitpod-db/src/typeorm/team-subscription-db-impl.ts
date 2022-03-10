@@ -4,15 +4,15 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { injectable, inject } from 'inversify';
-import { EntityManager, Repository, DeepPartial } from 'typeorm';
+import { injectable, inject } from "inversify";
+import { EntityManager, Repository, DeepPartial } from "typeorm";
 
-import { TeamSubscription, TeamSubscriptionSlot } from '@gitpod/gitpod-protocol/lib/team-subscription-protocol';
+import { TeamSubscription, TeamSubscriptionSlot } from "@gitpod/gitpod-protocol/lib/team-subscription-protocol";
 
-import { TeamSubscriptionDB } from '../team-subscription-db';
-import { DBTeamSubscription } from './entity/db-team-subscription';
-import { DBTeamSubscriptionSlot } from './entity/db-team-subscription-slot';
-import { TypeORM } from './typeorm';
+import { TeamSubscriptionDB } from "../team-subscription-db";
+import { DBTeamSubscription } from "./entity/db-team-subscription";
+import { DBTeamSubscriptionSlot } from "./entity/db-team-subscription-slot";
+import { TypeORM } from "./typeorm";
 
 @injectable()
 export class TeamSubscriptionDBImpl implements TeamSubscriptionDB {
@@ -54,9 +54,9 @@ export class TeamSubscriptionDBImpl implements TeamSubscriptionDB {
     async findTeamSubscriptionBySlotId(slotId: string): Promise<TeamSubscription | undefined> {
         const repo = await this.getRepo();
         const query = repo
-            .createQueryBuilder('ts')
-            .leftJoinAndMapOne('ts.id', DBTeamSubscriptionSlot, 'slot', 'slot.teamSubscriptionId = ts.id')
-            .where('slot.id = :slotId', { slotId });
+            .createQueryBuilder("ts")
+            .leftJoinAndMapOne("ts.id", DBTeamSubscriptionSlot, "slot", "slot.teamSubscriptionId = ts.id")
+            .where("slot.id = :slotId", { slotId });
         return query.getOne();
     }
 
@@ -71,9 +71,9 @@ export class TeamSubscriptionDBImpl implements TeamSubscriptionDB {
     async findTeamSubscriptionsForUser(userId: string, date: string): Promise<TeamSubscription[]> {
         const repo = await this.getRepo();
         const query = repo
-            .createQueryBuilder('ts')
-            .where('ts.userId = :userId', { userId: userId })
-            .andWhere('ts.startDate <= :date', { date: date })
+            .createQueryBuilder("ts")
+            .where("ts.userId = :userId", { userId: userId })
+            .andWhere("ts.startDate <= :date", { date: date })
             .andWhere('ts.endDate = "" OR ts.endDate > :date', { date: date });
         return query.getMany();
     }
@@ -92,7 +92,7 @@ export class TeamSubscriptionDBImpl implements TeamSubscriptionDB {
             const v = (dbSlot as any)[k];
             if (k in dbSlot && v === undefined) {
                 // typeorm ignores undefined as 'no data set' but we want to override old values!
-                (dbSlot as any)[k] = '';
+                (dbSlot as any)[k] = "";
             }
         }
         return (await this.getSlotsRepo()).save(dbSlot);

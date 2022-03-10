@@ -4,7 +4,7 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class TeamsAndProjects1622468446118 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {

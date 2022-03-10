@@ -4,7 +4,7 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import * as crypto from 'crypto';
+import * as crypto from "crypto";
 import {
     GitpodToken,
     GitpodTokenType,
@@ -14,8 +14,8 @@ import {
     TokenEntry,
     User,
     UserEnvVar,
-} from '@gitpod/gitpod-protocol';
-import { EncryptionService } from '@gitpod/gitpod-protocol/lib/encryption/encryption-service';
+} from "@gitpod/gitpod-protocol";
+import { EncryptionService } from "@gitpod/gitpod-protocol/lib/encryption/encryption-service";
 import {
     DateInterval,
     ExtraAccessTokenFields,
@@ -24,22 +24,22 @@ import {
     OAuthScope,
     OAuthToken,
     OAuthUser,
-} from '@jmondi/oauth2-server';
-import { inject, injectable, postConstruct } from 'inversify';
-import { EntityManager, Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
-import { BUILTIN_WORKSPACE_PROBE_USER_ID, MaybeUser, PartialUserUpdate, UserDB } from '../user-db';
-import { DBGitpodToken } from './entity/db-gitpod-token';
-import { DBIdentity } from './entity/db-identity';
-import { DBTokenEntry } from './entity/db-token-entry';
-import { DBUser } from './entity/db-user';
-import { DBUserEnvVar } from './entity/db-user-env-vars';
-import { DBWorkspace } from './entity/db-workspace';
-import { TypeORM } from './typeorm';
-import { log } from '@gitpod/gitpod-protocol/lib/util/logging';
+} from "@jmondi/oauth2-server";
+import { inject, injectable, postConstruct } from "inversify";
+import { EntityManager, Repository } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
+import { BUILTIN_WORKSPACE_PROBE_USER_ID, MaybeUser, PartialUserUpdate, UserDB } from "../user-db";
+import { DBGitpodToken } from "./entity/db-gitpod-token";
+import { DBIdentity } from "./entity/db-identity";
+import { DBTokenEntry } from "./entity/db-token-entry";
+import { DBUser } from "./entity/db-user";
+import { DBUserEnvVar } from "./entity/db-user-env-vars";
+import { DBWorkspace } from "./entity/db-workspace";
+import { TypeORM } from "./typeorm";
+import { log } from "@gitpod/gitpod-protocol/lib/util/logging";
 
 // OAuth token expiry
-const tokenExpiryInFuture = new DateInterval('7d');
+const tokenExpiryInFuture = new DateInterval("7d");
 
 /** HACK ahead: Some entities - namely DBTokenEntry for now - need access to an EncryptionService so we publish it here */
 export let encryptionService: EncryptionService;
@@ -95,7 +95,7 @@ export class TypeORMUserDBImpl implements UserDB {
             creationDate: new Date().toISOString(),
             identities: [],
             additionalData: {
-                ideSettings: { defaultIde: 'code' },
+                ideSettings: { defaultIde: "code" },
                 emailNotificationSettings: {
                     allowsChangelogMail: true,
                     allowsDevXMail: true,
@@ -130,14 +130,14 @@ export class TypeORMUserDBImpl implements UserDB {
     public async findUserByIdentity(identity: IdentityLookup): Promise<User | undefined> {
         const userRepo = await this.getUserRepo();
         const qBuilder = userRepo
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.identities', 'identity')
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.identities", "identity")
             .where((qb) => {
                 const subQuery = qb
                     .subQuery()
-                    .select('user1.id')
-                    .from(DBUser, 'user1')
-                    .leftJoin('user1.identities', 'identity')
+                    .select("user1.id")
+                    .from(DBUser, "user1")
+                    .leftJoin("user1.identities", "identity")
                     .where(`identity.authProviderId = :authProviderId`, { authProviderId: identity.authProviderId })
                     .andWhere(`identity.authId = :authId`, { authId: identity.authId })
                     .andWhere(`identity.deleted != true`)
@@ -151,13 +151,13 @@ export class TypeORMUserDBImpl implements UserDB {
     public async findUsersByEmail(email: string): Promise<User[]> {
         const userRepo = await this.getUserRepo();
         const qBuilder = userRepo
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.identities', 'identity')
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.identities", "identity")
             .where((qb) => {
                 const subQuery = qb
                     .subQuery()
-                    .select('identity1.userId')
-                    .from(DBIdentity, 'identity1')
+                    .select("identity1.userId")
+                    .from(DBIdentity, "identity1")
                     .where(`identity1.primaryEmail = :email`, { email: email })
                     .andWhere(`identity1.deleted != true`)
                     .getQuery();
@@ -171,7 +171,7 @@ export class TypeORMUserDBImpl implements UserDB {
             ).query(`
                 SELECT ws.ownerId AS userId, MAX(wsi.creationTime) AS lastActivity FROM d_b_workspace_instance AS wsi
                 LEFT JOIN d_b_workspace AS ws ON (wsi.workspaceId = ws.id)
-                WHERE ws.ownerId IN (${result.map((u) => `'${u.id}'`).join(', ')})
+                WHERE ws.ownerId IN (${result.map((u) => `'${u.id}'`).join(", ")})
                 GROUP BY ws.ownerId
             `)) as { userId?: string; lastActivity?: string }[];
             const lastActivity = (u: User) =>
@@ -193,16 +193,16 @@ export class TypeORMUserDBImpl implements UserDB {
         tokenType?: GitpodTokenType,
     ): Promise<{ user: User; token: GitpodToken } | undefined> {
         const repo = await this.getGitpodTokenRepo();
-        const qBuilder = repo.createQueryBuilder('gitpodToken').leftJoinAndSelect('gitpodToken.user', 'user');
+        const qBuilder = repo.createQueryBuilder("gitpodToken").leftJoinAndSelect("gitpodToken.user", "user");
         if (!!tokenType) {
-            qBuilder.where('gitpodToken.tokenHash = :tokenHash AND gitpodToken.type = :tokenType', {
+            qBuilder.where("gitpodToken.tokenHash = :tokenHash AND gitpodToken.type = :tokenType", {
                 tokenHash,
                 tokenType,
             });
         } else {
-            qBuilder.where('gitpodToken.tokenHash = :tokenHash', { tokenHash });
+            qBuilder.where("gitpodToken.tokenHash = :tokenHash", { tokenHash });
         }
-        qBuilder.andWhere('gitpodToken.deleted <> TRUE AND user.markedDeleted <> TRUE AND user.blocked <> TRUE');
+        qBuilder.andWhere("gitpodToken.deleted <> TRUE AND user.markedDeleted <> TRUE AND user.blocked <> TRUE");
         const token = await qBuilder.getOne();
         if (!token) {
             return;
@@ -213,15 +213,15 @@ export class TypeORMUserDBImpl implements UserDB {
 
     public async findGitpodTokensOfUser(userId: string, tokenHash: string): Promise<GitpodToken | undefined> {
         const repo = await this.getGitpodTokenRepo();
-        const qBuilder = repo.createQueryBuilder('gitpodToken').leftJoinAndSelect('gitpodToken.user', 'user');
-        qBuilder.where('user.id = :userId AND gitpodToken.tokenHash = :tokenHash', { userId, tokenHash });
+        const qBuilder = repo.createQueryBuilder("gitpodToken").leftJoinAndSelect("gitpodToken.user", "user");
+        qBuilder.where("user.id = :userId AND gitpodToken.tokenHash = :tokenHash", { userId, tokenHash });
         return qBuilder.getOne();
     }
 
     public async findAllGitpodTokensOfUser(userId: string): Promise<GitpodToken[]> {
         const repo = await this.getGitpodTokenRepo();
-        const qBuilder = repo.createQueryBuilder('gitpodToken').leftJoinAndSelect('gitpodToken.user', 'user');
-        qBuilder.where('user.id = :userId', { userId });
+        const qBuilder = repo.createQueryBuilder("gitpodToken").leftJoinAndSelect("gitpodToken.user", "user");
+        qBuilder.where("user.id = :userId", { userId });
         return qBuilder.getMany();
     }
 
@@ -258,7 +258,7 @@ export class TypeORMUserDBImpl implements UserDB {
     public async findIdentitiesByName(identity: Identity): Promise<Identity[]> {
         const repo = await this.getIdentitiesRepo();
         const qBuilder = repo
-            .createQueryBuilder('identity')
+            .createQueryBuilder("identity")
             .where(`identity.authProviderId = :authProviderId`, { authProviderId: identity.authProviderId })
             .andWhere(`identity.deleted != true`)
             .andWhere(`identity.authName = :authName`, { authName: identity.authName });
@@ -307,7 +307,7 @@ export class TypeORMUserDBImpl implements UserDB {
         );
     }
 
-    public async updateTokenEntry(tokenEntry: Partial<TokenEntry> & Pick<TokenEntry, 'uid'>): Promise<void> {
+    public async updateTokenEntry(tokenEntry: Partial<TokenEntry> & Pick<TokenEntry, "uid">): Promise<void> {
         const repo = await this.getTokenRepo();
         await repo.update(tokenEntry.uid, tokenEntry);
     }
@@ -384,14 +384,14 @@ export class TypeORMUserDBImpl implements UserDB {
         offset: number,
         limit: number,
         orderBy: keyof User,
-        orderDir: 'DESC' | 'ASC',
+        orderDir: "DESC" | "ASC",
         searchTerm?: string,
         minCreationDate?: Date,
         maxCreationDate?: Date,
         excludeBuiltinUsers?: boolean,
     ): Promise<{ total: number; rows: User[] }> {
         const userRepo = await this.getUserRepo();
-        const qBuilder = userRepo.createQueryBuilder('user').leftJoinAndSelect('user.identities', 'identity');
+        const qBuilder = userRepo.createQueryBuilder("user").leftJoinAndSelect("user.identities", "identity");
         if (searchTerm) {
             qBuilder.andWhere(
                 `user.name LIKE :searchTerm
@@ -401,23 +401,23 @@ export class TypeORMUserDBImpl implements UserDB {
                                 i.deleted != true
                             AND i.primaryEmail LIKE :searchTerm
                 )`,
-                { searchTerm: '%' + searchTerm + '%' },
+                { searchTerm: "%" + searchTerm + "%" },
             );
         }
         if (minCreationDate) {
-            qBuilder.andWhere('user.creationDate >= :minCreationDate', {
+            qBuilder.andWhere("user.creationDate >= :minCreationDate", {
                 minCreationDate: minCreationDate.toISOString(),
             });
         }
         if (maxCreationDate) {
-            qBuilder.andWhere('user.creationDate < :maxCreationDate', {
+            qBuilder.andWhere("user.creationDate < :maxCreationDate", {
                 maxCreationDate: maxCreationDate.toISOString(),
             });
         }
         if (excludeBuiltinUsers) {
-            qBuilder.andWhere('user.id <> :userId', { userId: BUILTIN_WORKSPACE_PROBE_USER_ID });
+            qBuilder.andWhere("user.id <> :userId", { userId: BUILTIN_WORKSPACE_PROBE_USER_ID });
         }
-        qBuilder.orderBy('user.' + orderBy, orderDir);
+        qBuilder.orderBy("user." + orderBy, orderDir);
         qBuilder.skip(offset).take(limit).select();
         const [rows, total] = await qBuilder.getManyAndCount();
         return { total, rows };
@@ -453,7 +453,7 @@ export class TypeORMUserDBImpl implements UserDB {
     async issueToken(client: OAuthClient, scopes: OAuthScope[], user?: OAuthUser): Promise<OAuthToken> {
         const expiry = tokenExpiryInFuture.getEndDate();
         return <OAuthToken>{
-            accessToken: crypto.randomBytes(30).toString('hex'),
+            accessToken: crypto.randomBytes(30).toString("hex"),
             accessTokenExpiresAt: expiry,
             client,
             user,
@@ -462,8 +462,8 @@ export class TypeORMUserDBImpl implements UserDB {
     }
     async issueRefreshToken(accessToken: OAuthToken): Promise<OAuthToken> {
         // NOTE(rl): this exists for the OAuth server code - Gitpod tokens are non-refreshable (atm)
-        accessToken.refreshToken = 'refreshtokentoken';
-        accessToken.refreshTokenExpiresAt = new DateInterval('30d').getEndDate();
+        accessToken.refreshToken = "refreshtokentoken";
+        accessToken.refreshTokenExpiresAt = new DateInterval("30d").getEndDate();
         await this.persist(accessToken);
         return accessToken;
     }
@@ -472,7 +472,7 @@ export class TypeORMUserDBImpl implements UserDB {
 
         // Does the token already exist?
         var dbToken: GitpodToken & { user: DBUser };
-        const tokenHash = crypto.createHash('sha256').update(accessToken.accessToken, 'utf8').digest('hex');
+        const tokenHash = crypto.createHash("sha256").update(accessToken.accessToken, "utf8").digest("hex");
         const userAndToken = await this.findUserByGitpodToken(tokenHash);
         if (userAndToken) {
             // Yes, update it (~)
@@ -500,14 +500,14 @@ export class TypeORMUserDBImpl implements UserDB {
         }
     }
     async revoke(accessTokenToken: OAuthToken): Promise<void> {
-        const tokenHash = crypto.createHash('sha256').update(accessTokenToken.accessToken, 'utf8').digest('hex');
+        const tokenHash = crypto.createHash("sha256").update(accessTokenToken.accessToken, "utf8").digest("hex");
         this.deleteGitpodToken(tokenHash);
     }
     async isRefreshTokenRevoked(refreshToken: OAuthToken): Promise<boolean> {
         return Date.now() > (refreshToken.refreshTokenExpiresAt?.getTime() ?? 0);
     }
     async getByRefreshToken(refreshTokenToken: string): Promise<OAuthToken> {
-        throw new Error('Not implemented');
+        throw new Error("Not implemented");
     }
 }
 

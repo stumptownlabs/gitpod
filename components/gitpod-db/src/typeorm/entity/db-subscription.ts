@@ -4,16 +4,16 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
-import { TypeORM } from '../../typeorm/typeorm';
-import { Transformer } from '../../typeorm/transformer';
-import { Subscription, PaymentData } from '@gitpod/gitpod-protocol/lib/accounting-protocol';
+import { Entity, Column, PrimaryColumn, Index } from "typeorm";
+import { TypeORM } from "../../typeorm/typeorm";
+import { Transformer } from "../../typeorm/transformer";
+import { Subscription, PaymentData } from "@gitpod/gitpod-protocol/lib/accounting-protocol";
 
 @Entity()
-@Index('ind_user_paymentReference', ['userId', 'paymentReference'])
+@Index("ind_user_paymentReference", ["userId", "paymentReference"])
 // on DB but not Typeorm: @Index("ind_lastModified", ["_lastModified"])   // DBSync
 export class DBSubscription implements Subscription {
-    @PrimaryColumn('uuid')
+    @PrimaryColumn("uuid")
     uid: string;
 
     @Column(TypeORM.UUID_COLUMN_TYPE)
@@ -23,41 +23,41 @@ export class DBSubscription implements Subscription {
     startDate: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     endDate?: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     cancellationDate?: string;
 
-    @Column('double')
+    @Column("double")
     amount: number;
 
-    @Column('double', { nullable: true })
+    @Column("double", { nullable: true })
     firstMonthAmount?: number;
 
-    @Column({ default: 'free' })
-    @Index('ind_planId')
+    @Column({ default: "free" })
+    @Index("ind_planId")
     planId: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     paymentReference?: string;
 
-    @Column('simple-json', { nullable: true })
+    @Column("simple-json", { nullable: true })
     paymentData?: PaymentData;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
-    @Index('ind_teamSubscriptionSlotId')
+    @Index("ind_teamSubscriptionSlotId")
     teamSubscriptionSlotId?: string;
 
     @Column({
@@ -77,26 +77,26 @@ export class DBSubscriptionAdditionalData {
     })
     mrr: number;
 
-    @Column('simple-json', { nullable: true })
+    @Column("simple-json", { nullable: true })
     coupons?: CouponData[];
 
     @Column()
     lastInvoiceAmount: number;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     lastInvoice?: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     nextBilling?: string;
 
     @Column({
-        type: 'timestamp',
+        type: "timestamp",
         precision: 6,
         transformer: Transformer.MAP_ISO_STRING_TO_TIMESTAMP_DROP,
     })

@@ -4,17 +4,17 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { inject, injectable } from 'inversify';
-import { PendingGithubEvent } from '@gitpod/gitpod-protocol';
-import { EntityManager, Repository } from 'typeorm';
-import { TypeORM } from './typeorm';
+import { inject, injectable } from "inversify";
+import { PendingGithubEvent } from "@gitpod/gitpod-protocol";
+import { EntityManager, Repository } from "typeorm";
+import { TypeORM } from "./typeorm";
 import {
     PendingGithubEventDB,
     PendingGithubEventWithUser,
     TransactionalPendingGithubEventDBFactory,
-} from '../pending-github-event-db';
-import { DBPendingGithubEvent } from './entity/db-pending-github-event';
-import { DBIdentity } from './entity/db-identity';
+} from "../pending-github-event-db";
+import { DBPendingGithubEvent } from "./entity/db-pending-github-event";
+import { DBIdentity } from "./entity/db-identity";
 
 @injectable()
 export class TypeORMPendingGithubEventDBImpl implements PendingGithubEventDB {
@@ -37,7 +37,7 @@ export class TypeORMPendingGithubEventDBImpl implements PendingGithubEventDB {
     public async findByGithubUserID(type: string, accountId: number): Promise<PendingGithubEvent[]> {
         const repo = await this.getRepo();
         return await repo
-            .createQueryBuilder('pghe')
+            .createQueryBuilder("pghe")
             .where(`pghe.githubUserId = :accountId AND pghe.type LIKE :tpe`, { accountId, tpe: `${type}%` })
             .getMany();
     }
@@ -50,12 +50,12 @@ export class TypeORMPendingGithubEventDBImpl implements PendingGithubEventDB {
     public async findWithUser(type: string): Promise<PendingGithubEventWithUser[]> {
         const repo = await this.getRepo();
         const res = await repo
-            .createQueryBuilder('pghe')
-            .innerJoinAndMapOne('pghe.identity', DBIdentity, 'ident', 'pghe.githubUserId = ident.authId')
-            .innerJoinAndSelect('ident.user', 'user')
+            .createQueryBuilder("pghe")
+            .innerJoinAndMapOne("pghe.identity", DBIdentity, "ident", "pghe.githubUserId = ident.authId")
+            .innerJoinAndSelect("ident.user", "user")
             .where('ident.authProviderId = "Public-GitHub"')
             .andWhere(`ident.deleted != true`)
-            .orderBy('pghe.creationDate', 'ASC')
+            .orderBy("pghe.creationDate", "ASC")
             .getMany();
 
         return res as PendingGithubEventWithUser[];

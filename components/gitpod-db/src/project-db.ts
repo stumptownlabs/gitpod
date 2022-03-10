@@ -4,9 +4,9 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { PartialProject, Project, ProjectEnvVar, ProjectEnvVarWithValue } from '@gitpod/gitpod-protocol';
+import { PartialProject, Project, ProjectEnvVar, ProjectEnvVarWithValue } from "@gitpod/gitpod-protocol";
 
-export const ProjectDB = Symbol('ProjectDB');
+export const ProjectDB = Symbol("ProjectDB");
 export interface ProjectDB {
     findProjectById(projectId: string): Promise<Project | undefined>;
     findProjectByCloneUrl(cloneUrl: string): Promise<Project | undefined>;
@@ -17,7 +17,7 @@ export interface ProjectDB {
         offset: number,
         limit: number,
         orderBy: keyof Project,
-        orderDir: 'ASC' | 'DESC',
+        orderDir: "ASC" | "DESC",
         searchTerm: string,
     ): Promise<{ total: number; rows: Project[] }>;
     storeProject(project: Project): Promise<Project>;

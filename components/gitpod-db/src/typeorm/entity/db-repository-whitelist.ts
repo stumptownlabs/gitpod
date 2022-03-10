@@ -4,20 +4,20 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { PrimaryColumn, Entity, Column } from 'typeorm';
+import { PrimaryColumn, Entity, Column } from "typeorm";
 
 @Entity()
 export class DBRepositoryWhiteList {
     static readonly MIN_FEATURED_REPOSITORY_PRIO = 0;
 
     @PrimaryColumn({
-        type: 'char',
+        type: "char",
         length: 128,
     })
     url: string;
 
     @Column({
-        type: 'text',
+        type: "text",
     })
     description?: string;
 

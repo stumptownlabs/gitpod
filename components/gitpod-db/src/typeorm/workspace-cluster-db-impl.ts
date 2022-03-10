@@ -4,16 +4,16 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Repository, EntityManager, DeepPartial } from 'typeorm';
-import { injectable, inject } from 'inversify';
-import { TypeORM } from './typeorm';
-import { WorkspaceClusterDB } from '../workspace-cluster-db';
-import { DBWorkspaceCluster } from './entity/db-workspace-cluster';
+import { Repository, EntityManager, DeepPartial } from "typeorm";
+import { injectable, inject } from "inversify";
+import { TypeORM } from "./typeorm";
+import { WorkspaceClusterDB } from "../workspace-cluster-db";
+import { DBWorkspaceCluster } from "./entity/db-workspace-cluster";
 import {
     WorkspaceCluster,
     WorkspaceClusterFilter,
     WorkspaceClusterWoTLS,
-} from '@gitpod/gitpod-protocol/lib/workspace-cluster';
+} from "@gitpod/gitpod-protocol/lib/workspace-cluster";
 
 @injectable()
 export class WorkspaceClusterDBImpl implements WorkspaceClusterDB {
@@ -44,31 +44,31 @@ export class WorkspaceClusterDBImpl implements WorkspaceClusterDB {
 
     async findFiltered(predicate: DeepPartial<WorkspaceClusterFilter>): Promise<WorkspaceClusterWoTLS[]> {
         const prototype: WorkspaceClusterWoTLS = {
-            name: '',
-            url: '',
+            name: "",
+            url: "",
             score: 0,
             maxScore: 0,
-            state: 'available',
+            state: "available",
             govern: false,
             admissionConstraints: [],
         };
 
         const repo = await this.getRepo();
         let qb = repo
-            .createQueryBuilder('wsc')
+            .createQueryBuilder("wsc")
             .select(Object.keys(prototype).map((k) => `wsc.${k}`))
-            .where('TRUE = TRUE'); // make sure andWhere works
+            .where("TRUE = TRUE"); // make sure andWhere works
         if (predicate.state !== undefined) {
-            qb = qb.andWhere('wsc.state = :state', predicate);
+            qb = qb.andWhere("wsc.state = :state", predicate);
         }
         if (predicate.minScore !== undefined) {
-            qb = qb.andWhere('wsc.score >= :minScore', predicate);
+            qb = qb.andWhere("wsc.score >= :minScore", predicate);
         }
         if (predicate.govern !== undefined) {
-            qb = qb.andWhere('wsc.govern = :govern', predicate);
+            qb = qb.andWhere("wsc.govern = :govern", predicate);
         }
         if (predicate.url !== undefined) {
-            qb = qb.andWhere('wsc.url = :url', predicate);
+            qb = qb.andWhere("wsc.url = :url", predicate);
         }
         return qb.getMany();
     }

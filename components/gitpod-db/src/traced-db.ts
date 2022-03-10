@@ -4,14 +4,14 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { TraceContext, TracingManager } from '@gitpod/gitpod-protocol/lib/util/tracing';
-import { interfaces } from 'inversify';
-import * as opentracing from 'opentracing';
+import { TraceContext, TracingManager } from "@gitpod/gitpod-protocol/lib/util/tracing";
+import { interfaces } from "inversify";
+import * as opentracing from "opentracing";
 
 export class DBWithTracing<T> {
     protected tracer: opentracing.Tracer;
     constructor(protected readonly db: any, manager: TracingManager) {
-        this.tracer = manager.getTracerForService('mysql');
+        this.tracer = manager.getTracerForService("mysql");
     }
 
     public trace(ctx: TraceContext): T {
@@ -52,7 +52,7 @@ export function bindDbWithTracing<T>(traceKey: string | symbol, bind: interfaces
     });
 }
 
-export const TracedWorkspaceDB = Symbol('TracedWorkspaceDB');
-export const TracedUserDB = Symbol('TracedUserDB');
-export const TracedLicenseDB = Symbol('TracedLicenseDB');
-export const TracedOneTimeSecretDB = Symbol('TracedOneTimeSecretDB');
+export const TracedWorkspaceDB = Symbol("TracedWorkspaceDB");
+export const TracedUserDB = Symbol("TracedUserDB");
+export const TracedLicenseDB = Symbol("TracedLicenseDB");
+export const TracedOneTimeSecretDB = Symbol("TracedOneTimeSecretDB");

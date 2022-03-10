@@ -4,12 +4,12 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Repository, EntityManager } from 'typeorm';
-import { injectable, inject } from 'inversify';
-import { TypeORM } from './typeorm';
-import { TermsAcceptanceEntry } from '@gitpod/gitpod-protocol';
-import { TermsAcceptanceDB } from '../terms-acceptance-db';
-import { DBTermsAcceptanceEntry } from './entity/db-terms-acceptance-entry';
+import { Repository, EntityManager } from "typeorm";
+import { injectable, inject } from "inversify";
+import { TypeORM } from "./typeorm";
+import { TermsAcceptanceEntry } from "@gitpod/gitpod-protocol";
+import { TermsAcceptanceDB } from "../terms-acceptance-db";
+import { DBTermsAcceptanceEntry } from "./entity/db-terms-acceptance-entry";
 
 @injectable()
 export class TermsAcceptanceDBImpl implements TermsAcceptanceDB {

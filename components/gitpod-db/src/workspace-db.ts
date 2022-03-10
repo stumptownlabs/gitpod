@@ -4,7 +4,7 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { DeepPartial } from 'typeorm';
+import { DeepPartial } from "typeorm";
 
 import {
     Workspace,
@@ -22,7 +22,7 @@ import {
     PrebuildInfo,
     AdminGetWorkspacesQuery,
     SnapshotState,
-} from '@gitpod/gitpod-protocol';
+} from "@gitpod/gitpod-protocol";
 
 export type MaybeWorkspace = Workspace | undefined;
 export type MaybeWorkspaceInstance = WorkspaceInstance | undefined;
@@ -43,15 +43,15 @@ export interface PrebuiltUpdatableAndWorkspace extends PrebuiltWorkspaceUpdatabl
     instance: WorkspaceInstance;
 }
 
-export type WorkspaceAuthData = Pick<Workspace, 'id' | 'ownerId' | 'shareable'>;
-export type WorkspaceInstancePortsAuthData = Pick<WorkspaceInstance, 'id' | 'region'>;
+export type WorkspaceAuthData = Pick<Workspace, "id" | "ownerId" | "shareable">;
+export type WorkspaceInstancePortsAuthData = Pick<WorkspaceInstance, "id" | "region">;
 export interface WorkspacePortsAuthData {
     instance: WorkspaceInstancePortsAuthData;
     workspace: WorkspaceAuthData;
 }
 
-export type WorkspaceInstanceSession = Pick<WorkspaceInstance, 'id' | 'startedTime' | 'stoppingTime' | 'stoppedTime'>;
-export type WorkspaceSessionData = Pick<Workspace, 'id' | 'contextURL' | 'context' | 'type'>;
+export type WorkspaceInstanceSession = Pick<WorkspaceInstance, "id" | "startedTime" | "stoppingTime" | "stoppedTime">;
+export type WorkspaceSessionData = Pick<Workspace, "id" | "contextURL" | "context" | "type">;
 export interface WorkspaceInstanceSessionWithWorkspace {
     instance: WorkspaceInstanceSession;
     workspace: WorkspaceSessionData;
@@ -62,10 +62,10 @@ export interface PrebuildWithWorkspace {
     workspace: Workspace;
 }
 
-export type WorkspaceAndOwner = Pick<Workspace, 'id' | 'ownerId'>;
-export type WorkspaceOwnerAndSoftDeleted = Pick<Workspace, 'id' | 'ownerId' | 'softDeleted'>;
+export type WorkspaceAndOwner = Pick<Workspace, "id" | "ownerId">;
+export type WorkspaceOwnerAndSoftDeleted = Pick<Workspace, "id" | "ownerId" | "softDeleted">;
 
-export const WorkspaceDB = Symbol('WorkspaceDB');
+export const WorkspaceDB = Symbol("WorkspaceDB");
 export interface WorkspaceDB {
     connect(maxTries: number, timeout: number): Promise<void>;
 
@@ -106,7 +106,7 @@ export interface WorkspaceDB {
         offset: number,
         limit: number,
         orderBy: keyof Workspace,
-        orderDir: 'ASC' | 'DESC',
+        orderDir: "ASC" | "DESC",
         ownerId?: string,
         searchTerm?: string,
         minCreationTime?: Date,
@@ -117,7 +117,7 @@ export interface WorkspaceDB {
         offset: number,
         limit: number,
         orderBy: keyof WorkspaceAndInstance,
-        orderDir: 'ASC' | 'DESC',
+        orderDir: "ASC" | "DESC",
         query?: AdminGetWorkspacesQuery,
     ): Promise<{ total: number; rows: WorkspaceAndInstance[] }>;
     findWorkspaceAndInstance(id: string): Promise<WorkspaceAndInstance | undefined>;
@@ -130,7 +130,7 @@ export interface WorkspaceDB {
         offset: number,
         limit: number,
         orderBy: keyof WorkspaceInstance,
-        orderDir: 'ASC' | 'DESC',
+        orderDir: "ASC" | "DESC",
         ownerId?: string,
         minCreationTime?: Date,
         maxCreationTime?: Date,
@@ -157,7 +157,7 @@ export interface WorkspaceDB {
     findSnapshotsByWorkspaceId(workspaceId: string): Promise<Snapshot[]>;
     storeSnapshot(snapshot: Snapshot): Promise<Snapshot>;
     deleteSnapshot(snapshotId: string): Promise<void>;
-    updateSnapshot(snapshot: DeepPartial<Snapshot> & Pick<Snapshot, 'id'>): Promise<void>;
+    updateSnapshot(snapshot: DeepPartial<Snapshot> & Pick<Snapshot, "id">): Promise<void>;
 
     storePrebuiltWorkspace(pws: PrebuiltWorkspace): Promise<PrebuiltWorkspace>;
     findPrebuiltWorkspaceByCommit(cloneURL: string, commit: string): Promise<PrebuiltWorkspace | undefined>;

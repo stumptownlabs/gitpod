@@ -4,19 +4,19 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { Subscription } from '@gitpod/gitpod-protocol/lib/accounting-protocol';
-import * as chai from 'chai';
-import { suite, test, timeout } from 'mocha-typescript';
-import { QueryRunner } from 'typeorm';
-import { AccountingDB } from './accounting-db';
-import { oneMonthLater, rightAfter, rightBefore } from '@gitpod/gitpod-protocol/lib/util/timeutil';
-import { DBAccountEntry } from './typeorm/entity/db-account-entry';
-import { TransactionalAccountingDBImpl } from './typeorm/accounting-db-impl';
-import { DBWorkspace } from './typeorm/entity/db-workspace';
-import { DBWorkspaceInstance } from './typeorm/entity/db-workspace-instance';
-import { DBSubscription } from './typeorm/entity/db-subscription';
-import { testContainer } from './test-container';
-import { TypeORM } from './typeorm/typeorm';
+import { Subscription } from "@gitpod/gitpod-protocol/lib/accounting-protocol";
+import * as chai from "chai";
+import { suite, test, timeout } from "mocha-typescript";
+import { QueryRunner } from "typeorm";
+import { AccountingDB } from "./accounting-db";
+import { oneMonthLater, rightAfter, rightBefore } from "@gitpod/gitpod-protocol/lib/util/timeutil";
+import { DBAccountEntry } from "./typeorm/entity/db-account-entry";
+import { TransactionalAccountingDBImpl } from "./typeorm/accounting-db-impl";
+import { DBWorkspace } from "./typeorm/entity/db-workspace";
+import { DBWorkspaceInstance } from "./typeorm/entity/db-workspace-instance";
+import { DBSubscription } from "./typeorm/entity/db-subscription";
+import { testContainer } from "./test-container";
+import { TypeORM } from "./typeorm/typeorm";
 const expect = chai.expect;
 
 @suite
@@ -50,11 +50,11 @@ export class AccountingDBSpec {
         const inBetween = new Date(0.5 * (new Date(now).getTime() + new Date(later).getTime())).toISOString();
 
         const subscription = <Subscription>{
-            userId: 'Now open',
+            userId: "Now open",
             startDate: now,
             endDate: later,
             amount: 1.01,
-            planId: 'test',
+            planId: "test",
         };
         await this.db.newSubscription(subscription);
 
@@ -76,11 +76,11 @@ export class AccountingDBSpec {
         const inBetween = new Date(0.5 * (new Date(now).getTime() + new Date(later).getTime())).toISOString();
 
         const subscription = <Subscription>{
-            userId: 'Open ended',
+            userId: "Open ended",
             startDate: now,
             endDate: undefined, // open ended
             amount: 1.01,
-            planId: 'test',
+            planId: "test",
         };
         await this.db.newSubscription(subscription);
 
@@ -100,11 +100,11 @@ export class AccountingDBSpec {
         const now = new Date().toISOString();
         const later = oneMonthLater(now, 31);
         const subscription = <Subscription>{
-            userId: 'Open ended',
+            userId: "Open ended",
             startDate: now,
             endDate: undefined, // open ended
             amount: 1.01,
-            planId: 'test',
+            planId: "test",
         };
         const dbSubscription = await this.db.newSubscription(subscription);
         expectExactlyOne(await this.db.findActiveSubscriptions(now, rightAfter(later)), subscription);
@@ -120,15 +120,15 @@ export class AccountingDBSpec {
         const now = new Date().toISOString();
         const later = oneMonthLater(now, 31);
         const subscription = <Subscription>{
-            userId: 'Open ended',
+            userId: "Open ended",
             startDate: now,
             endDate: undefined, // open ended
             amount: 1.01,
-            planId: 'test',
+            planId: "test",
         };
         let dbSubscription = await this.db.newSubscription(subscription);
         expectExactlyOne(await this.db.findActiveSubscriptionsForUser(subscription.userId, now), subscription);
-        expect(await this.db.findActiveSubscriptionsForUser(subscription.userId, rightBefore(now))).to.be.an('array')
+        expect(await this.db.findActiveSubscriptionsForUser(subscription.userId, rightBefore(now))).to.be.an("array")
             .and.empty;
         expectExactlyOne(await this.db.findActiveSubscriptionsForUser(subscription.userId, later), subscription);
         Subscription.cancelSubscription(dbSubscription, later);
@@ -138,7 +138,7 @@ export class AccountingDBSpec {
             await this.db.findActiveSubscriptionsForUser(subscription.userId, rightBefore(later)),
             dbSubscription,
         );
-        expect(await this.db.findActiveSubscriptionsForUser(subscription.userId, later)).to.be.an('array').and.empty;
+        expect(await this.db.findActiveSubscriptionsForUser(subscription.userId, later)).to.be.an("array").and.empty;
     }
 }
 

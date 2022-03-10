@@ -4,13 +4,13 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { injectable, inject } from 'inversify';
-import { EntityManager, Repository } from 'typeorm';
+import { injectable, inject } from "inversify";
+import { EntityManager, Repository } from "typeorm";
 
-import { EduEmailDomain } from '@gitpod/gitpod-protocol';
-import { TypeORM } from './typeorm';
-import { EduEmailDomainDB } from '../edu-email-domain-db';
-import { DBEduEmailDomain } from './entity/db-edu-email-domain';
+import { EduEmailDomain } from "@gitpod/gitpod-protocol";
+import { TypeORM } from "./typeorm";
+import { EduEmailDomainDB } from "../edu-email-domain-db";
+import { DBEduEmailDomain } from "./entity/db-edu-email-domain";
 
 @injectable()
 export class EduEmailDomainDBImpl implements EduEmailDomainDB {
@@ -31,7 +31,7 @@ export class EduEmailDomainDBImpl implements EduEmailDomainDB {
 
     async readEducationalInstitutionDomains(): Promise<EduEmailDomain[]> {
         const repo = await this.getRepo();
-        const result = await repo.createQueryBuilder('entry').getMany();
+        const result = await repo.createQueryBuilder("entry").getMany();
         return result;
     }
 }

@@ -4,17 +4,17 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { list as blocklist } from 'the-big-username-blacklist';
-import { Team, TeamMemberInfo, TeamMemberRole, TeamMembershipInvite, User } from '@gitpod/gitpod-protocol';
-import { inject, injectable } from 'inversify';
-import { TypeORM } from './typeorm';
-import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
-import { TeamDB } from '../team-db';
-import { DBTeam } from './entity/db-team';
-import { DBTeamMembership } from './entity/db-team-membership';
-import { DBUser } from './entity/db-user';
-import { DBTeamMembershipInvite } from './entity/db-team-membership-invite';
+import { list as blocklist } from "the-big-username-blacklist";
+import { Team, TeamMemberInfo, TeamMemberRole, TeamMembershipInvite, User } from "@gitpod/gitpod-protocol";
+import { inject, injectable } from "inversify";
+import { TypeORM } from "./typeorm";
+import { Repository } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
+import { TeamDB } from "../team-db";
+import { DBTeam } from "./entity/db-team";
+import { DBTeamMembership } from "./entity/db-team-membership";
+import { DBUser } from "./entity/db-user";
+import { DBTeamMembershipInvite } from "./entity/db-team-membership-invite";
 
 @injectable()
 export class TeamDBImpl implements TeamDB {
@@ -44,13 +44,13 @@ export class TeamDBImpl implements TeamDB {
         offset: number,
         limit: number,
         orderBy: keyof Team,
-        orderDir: 'DESC' | 'ASC',
+        orderDir: "DESC" | "ASC",
         searchTerm?: string,
     ): Promise<{ total: number; rows: Team[] }> {
         const teamRepo = await this.getTeamRepo();
         const queryBuilder = teamRepo
-            .createQueryBuilder('team')
-            .where('team.name LIKE :searchTerm', { searchTerm: `%${searchTerm}%` })
+            .createQueryBuilder("team")
+            .where("team.name LIKE :searchTerm", { searchTerm: `%${searchTerm}%` })
             .skip(offset)
             .take(limit)
             .orderBy(orderBy, orderDir);
@@ -98,7 +98,7 @@ export class TeamDBImpl implements TeamDB {
         const userTeams = await this.findTeamsByUser(userId);
         for (const team of userTeams) {
             const memberships = await this.findMembersByTeam(team.id);
-            const ownerships = memberships.filter((m) => m.role === 'owner');
+            const ownerships = memberships.filter((m) => m.role === "owner");
             if (ownerships.length === 1 && ownerships[0].userId === userId) {
                 soleOwnedTeams.push(team);
             }
@@ -108,27 +108,27 @@ export class TeamDBImpl implements TeamDB {
 
     public async createTeam(userId: string, name: string): Promise<Team> {
         if (!name) {
-            throw new Error('Team name cannot be empty');
+            throw new Error("Team name cannot be empty");
         }
         if (!/^[A-Za-z0-9 '_-]+$/.test(name)) {
             throw new Error("Please choose a team name containing only letters, numbers, -, _, ', or spaces.");
         }
-        const slug = name.toLocaleLowerCase().replace(/[ ']/g, '-');
+        const slug = name.toLocaleLowerCase().replace(/[ ']/g, "-");
         if (blocklist.indexOf(slug) !== -1) {
-            throw new Error('Creating a team with this name is not allowed');
+            throw new Error("Creating a team with this name is not allowed");
         }
         const userRepo = await this.getUserRepo();
         const existingUsers = await userRepo.query(
-            'SELECT COUNT(id) AS count FROM d_b_user WHERE fullName LIKE ? OR name LIKE ?',
+            "SELECT COUNT(id) AS count FROM d_b_user WHERE fullName LIKE ? OR name LIKE ?",
             [name, slug],
         );
         if (Number.parseInt(existingUsers[0].count) > 0) {
-            throw new Error('A team cannot have the same name as an existing user');
+            throw new Error("A team cannot have the same name as an existing user");
         }
         const teamRepo = await this.getTeamRepo();
         const existingTeam = await teamRepo.findOne({ slug, deleted: false, markedDeleted: false });
         if (!!existingTeam) {
-            throw new Error('A team with this name already exists');
+            throw new Error("A team with this name already exists");
         }
         const team: Team = {
             id: uuidv4(),
@@ -142,7 +142,7 @@ export class TeamDBImpl implements TeamDB {
             id: uuidv4(),
             teamId: team.id,
             userId,
-            role: 'owner',
+            role: "owner",
             creationTime: team.creationTime,
         });
         return team;
@@ -161,7 +161,7 @@ export class TeamDBImpl implements TeamDB {
         const teamRepo = await this.getTeamRepo();
         const team = await teamRepo.findOne(teamId);
         if (!team || !!team.deleted) {
-            throw new Error('A team with this ID could not be found');
+            throw new Error("A team with this ID could not be found");
         }
         const membershipRepo = await this.getMembershipRepo();
         const membership = await membershipRepo.findOne({ teamId, userId, deleted: false });
@@ -172,7 +172,7 @@ export class TeamDBImpl implements TeamDB {
             id: uuidv4(),
             teamId: team.id,
             userId,
-            role: 'member',
+            role: "member",
             creationTime: new Date().toISOString(),
         });
     }
@@ -181,12 +181,12 @@ export class TeamDBImpl implements TeamDB {
         const teamRepo = await this.getTeamRepo();
         const team = await teamRepo.findOne(teamId);
         if (!team || !!team.deleted) {
-            throw new Error('A team with this ID could not be found');
+            throw new Error("A team with this ID could not be found");
         }
         const membershipRepo = await this.getMembershipRepo();
         const membership = await membershipRepo.findOne({ teamId, userId, deleted: false });
         if (!membership) {
-            throw new Error('The user is not currently a member of this team');
+            throw new Error("The user is not currently a member of this team");
         }
         membership.role = role;
         await membershipRepo.save(membership);
@@ -196,12 +196,12 @@ export class TeamDBImpl implements TeamDB {
         const teamRepo = await this.getTeamRepo();
         const team = await teamRepo.findOne(teamId);
         if (!team || !!team.deleted) {
-            throw new Error('A team with this ID could not be found');
+            throw new Error("A team with this ID could not be found");
         }
         const membershipRepo = await this.getMembershipRepo();
         const membership = await membershipRepo.findOne({ teamId, userId, deleted: false });
         if (!membership) {
-            throw new Error('You are not currently a member of this team');
+            throw new Error("You are not currently a member of this team");
         }
         membership.deleted = true;
         await membershipRepo.save(membership);
@@ -211,7 +211,7 @@ export class TeamDBImpl implements TeamDB {
         const inviteRepo = await this.getMembershipInviteRepo();
         const invite = await inviteRepo.findOne(inviteId);
         if (!invite) {
-            throw new Error('No invite found for the given ID.');
+            throw new Error("No invite found for the given ID.");
         }
         return invite;
     }
@@ -219,13 +219,13 @@ export class TeamDBImpl implements TeamDB {
     public async findGenericInviteByTeamId(teamId: string): Promise<TeamMembershipInvite | undefined> {
         const inviteRepo = await this.getMembershipInviteRepo();
         const all = await inviteRepo.find({ teamId });
-        return all.filter((i) => i.invalidationTime === '' && !i.invitedEmail)[0];
+        return all.filter((i) => i.invalidationTime === "" && !i.invitedEmail)[0];
     }
 
     public async resetGenericInvite(teamId: string): Promise<TeamMembershipInvite> {
         const inviteRepo = await this.getMembershipInviteRepo();
         const invite = await this.findGenericInviteByTeamId(teamId);
-        if (invite && invite.invalidationTime === '') {
+        if (invite && invite.invalidationTime === "") {
             invite.invalidationTime = new Date().toISOString();
             await inviteRepo.save(invite);
         }
@@ -233,8 +233,8 @@ export class TeamDBImpl implements TeamDB {
         const newInvite: TeamMembershipInvite = {
             id: uuidv4(),
             creationTime: new Date().toISOString(),
-            invalidationTime: '',
-            role: 'member',
+            invalidationTime: "",
+            role: "member",
             teamId,
         };
         await inviteRepo.save(newInvite);

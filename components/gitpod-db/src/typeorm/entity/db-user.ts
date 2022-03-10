@@ -4,11 +4,11 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { PrimaryColumn, Entity, Column, OneToMany, JoinColumn, Index } from 'typeorm';
-import { User, RoleOrPermission, AdditionalUserData, UserFeatureSettings } from '@gitpod/gitpod-protocol';
-import { DBIdentity } from './db-identity';
-import { TypeORM } from '../typeorm';
-import { Transformer } from '../transformer';
+import { PrimaryColumn, Entity, Column, OneToMany, JoinColumn, Index } from "typeorm";
+import { User, RoleOrPermission, AdditionalUserData, UserFeatureSettings } from "@gitpod/gitpod-protocol";
+import { DBIdentity } from "./db-identity";
+import { TypeORM } from "../typeorm";
+import { Transformer } from "../transformer";
 
 @Entity()
 // on DB but not Typeorm: @Index("ind_lastModified", ["_lastModified"])   // DBSync
@@ -16,31 +16,31 @@ export class DBUser implements User {
     @PrimaryColumn(TypeORM.UUID_COLUMN_TYPE)
     id: string;
 
-    @Column('varchar')
-    @Index('ind_creationDate')
+    @Column("varchar")
+    @Index("ind_creationDate")
     creationDate: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     avatarUrl?: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     name?: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     fullName?: string;
 
     @OneToMany((type) => DBIdentity, (identity) => identity.user, {
         eager: true,
-        cascade: ['insert', 'update'], // we do delete on our own
+        cascade: ["insert", "update"], // we do delete on our own
     })
     @JoinColumn()
     identities: DBIdentity[];
@@ -51,13 +51,13 @@ export class DBUser implements User {
     blocked?: boolean;
 
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         nullable: true,
     })
     featureFlags?: UserFeatureSettings;
 
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         nullable: true,
     })
     rolesOrPermissions?: RoleOrPermission[];
@@ -74,7 +74,7 @@ export class DBUser implements User {
     noReleasePeriod?: boolean;
 
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         nullable: true,
     })
     additionalData?: AdditionalUserData;

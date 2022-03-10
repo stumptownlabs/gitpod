@@ -4,13 +4,13 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Repository, EntityManager } from 'typeorm';
-import { injectable, inject } from 'inversify';
-import { TypeORM } from './typeorm';
-import { TheiaPluginDB } from '../theia-plugin-db';
-import { DBTheiaPlugin } from './entity/db-theia-plugin';
-import { TheiaPlugin } from '@gitpod/gitpod-protocol';
-import { v4 as uuidv4 } from 'uuid';
+import { Repository, EntityManager } from "typeorm";
+import { injectable, inject } from "inversify";
+import { TypeORM } from "./typeorm";
+import { TheiaPluginDB } from "../theia-plugin-db";
+import { DBTheiaPlugin } from "./entity/db-theia-plugin";
+import { TheiaPlugin } from "@gitpod/gitpod-protocol";
+import { v4 as uuidv4 } from "uuid";
 
 @injectable()
 export class TheiaPluginDBImpl implements TheiaPluginDB {
@@ -59,15 +59,15 @@ export class TheiaPluginDBImpl implements TheiaPluginDB {
 
     async findByPluginId(pluginId: string): Promise<TheiaPlugin[]> {
         const repo = await this.getTheiaPluginRepo();
-        const query = repo.createQueryBuilder('theia_plugin').where(`theia_plugin.pluginId = :pluginId`, { pluginId });
+        const query = repo.createQueryBuilder("theia_plugin").where(`theia_plugin.pluginId = :pluginId`, { pluginId });
         return query.getMany();
     }
 
     async exists(pluginId: string, predicate: { state?: TheiaPlugin.State; hash?: string }): Promise<boolean> {
         const repo = await this.getTheiaPluginRepo();
         const query = repo
-            .createQueryBuilder('theia_plugin')
-            .select('1')
+            .createQueryBuilder("theia_plugin")
+            .select("1")
             .where(`theia_plugin.pluginId = :pluginId`, { pluginId });
         if (predicate.state) {
             query.andWhere(`theia_plugin.state = :state`, { state: predicate.state });

@@ -4,11 +4,11 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { inject, injectable } from 'inversify';
-import { EntityManager } from 'typeorm';
-import uuid = require('uuid');
-import { DBCodeSyncResource, IUserDataManifest, ServerResource } from './entity/db-code-sync-resource';
-import { TypeORM } from './typeorm';
+import { inject, injectable } from "inversify";
+import { EntityManager } from "typeorm";
+import uuid = require("uuid");
+import { DBCodeSyncResource, IUserDataManifest, ServerResource } from "./entity/db-code-sync-resource";
+import { TypeORM } from "./typeorm";
 
 export interface CodeSyncInsertOptions {
     latestRev?: string;
@@ -23,20 +23,20 @@ export class CodeSyncResourceDB {
     async getManifest(userId: string): Promise<IUserDataManifest> {
         const connection = await this.typeORM.getConnection();
         const resources = await connection.manager
-            .createQueryBuilder(DBCodeSyncResource, 'resource')
-            .where('resource.userId = :userId AND resource.deleted = 0', { userId })
+            .createQueryBuilder(DBCodeSyncResource, "resource")
+            .where("resource.userId = :userId AND resource.deleted = 0", { userId })
             .andWhere((qb) => {
                 const subQuery = qb
                     .subQuery()
-                    .select('resource2.userId')
-                    .addSelect('resource2.kind')
-                    .addSelect('max(resource2.created)')
-                    .from(DBCodeSyncResource, 'resource2')
-                    .where('resource2.userId = :userId AND resource2.deleted = 0', { userId })
-                    .groupBy('resource2.kind')
-                    .orderBy('resource2.created', 'DESC')
+                    .select("resource2.userId")
+                    .addSelect("resource2.kind")
+                    .addSelect("max(resource2.created)")
+                    .from(DBCodeSyncResource, "resource2")
+                    .where("resource2.userId = :userId AND resource2.deleted = 0", { userId })
+                    .groupBy("resource2.kind")
+                    .orderBy("resource2.created", "DESC")
                     .getQuery();
-                return '(resource.userId,resource.kind,resource.created) IN ' + subQuery;
+                return "(resource.userId,resource.kind,resource.created) IN " + subQuery;
             })
             .getMany();
 
@@ -65,7 +65,7 @@ export class CodeSyncResourceDB {
                 .createQueryBuilder()
                 .update(DBCodeSyncResource)
                 .set({ deleted: true })
-                .where('userId = :userId AND deleted = 0', { userId })
+                .where("userId = :userId AND deleted = 0", { userId })
                 .execute();
             await doDelete();
         });
@@ -88,7 +88,7 @@ export class CodeSyncResourceDB {
                     toUpdated = resources[resources.length - 1];
                 }
             } else {
-                latest = await this.doGetResource(manager, userId, kind, 'latest');
+                latest = await this.doGetResource(manager, userId, kind, "latest");
             }
             if (params?.latestRev && latest?.rev !== params.latestRev) {
                 return undefined;
@@ -100,7 +100,7 @@ export class CodeSyncResourceDB {
                     .createQueryBuilder()
                     .update(DBCodeSyncResource)
                     .set({ rev })
-                    .where('userId = :userId AND kind = :kind AND rev = :rev', { userId, kind, rev: toUpdated.rev })
+                    .where("userId = :userId AND kind = :kind AND rev = :rev", { userId, kind, rev: toUpdated.rev })
                     .execute();
             } else {
                 await manager
@@ -118,15 +118,15 @@ export class CodeSyncResourceDB {
         manager: EntityManager,
         userId: string,
         kind: ServerResource,
-        rev: string | 'latest',
+        rev: string | "latest",
     ): Promise<DBCodeSyncResource | undefined> {
         let qb = manager
-            .createQueryBuilder(DBCodeSyncResource, 'resource')
-            .where('resource.userId = :userId AND resource.kind = :kind AND resource.deleted = 0', { userId, kind });
-        if (rev === 'latest') {
-            qb.orderBy('resource.created', 'DESC');
+            .createQueryBuilder(DBCodeSyncResource, "resource")
+            .where("resource.userId = :userId AND resource.kind = :kind AND resource.deleted = 0", { userId, kind });
+        if (rev === "latest") {
+            qb.orderBy("resource.created", "DESC");
         } else {
-            qb = qb.andWhere('resource.rev = :rev', { rev });
+            qb = qb.andWhere("resource.rev = :rev", { rev });
         }
         return qb.getOne();
     }
@@ -138,9 +138,9 @@ export class CodeSyncResourceDB {
     ): Promise<DBCodeSyncResource[]> {
         return manager
             .getRepository(DBCodeSyncResource)
-            .createQueryBuilder('resource')
-            .where('resource.userId = :userId AND resource.kind = :kind AND resource.deleted = 0', { userId, kind })
-            .orderBy('resource.created', 'DESC')
+            .createQueryBuilder("resource")
+            .where("resource.userId = :userId AND resource.kind = :kind AND resource.deleted = 0", { userId, kind })
+            .orderBy("resource.created", "DESC")
             .getMany();
     }
 }

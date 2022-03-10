@@ -4,12 +4,12 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { inject, injectable } from 'inversify';
-import { log } from '@gitpod/gitpod-protocol/lib/util/logging';
+import { inject, injectable } from "inversify";
+import { log } from "@gitpod/gitpod-protocol/lib/util/logging";
 
-import { GitpodTableDescriptionProvider, TableDescription } from './tables';
-import { TypeORM } from './typeorm/typeorm';
-import { repeat } from '@gitpod/gitpod-protocol/lib/util/repeat';
+import { GitpodTableDescriptionProvider, TableDescription } from "./tables";
+import { TypeORM } from "./typeorm/typeorm";
+import { repeat } from "@gitpod/gitpod-protocol/lib/util/repeat";
 
 @injectable()
 export class PeriodicDbDeleter {
@@ -17,8 +17,8 @@ export class PeriodicDbDeleter {
     @inject(TypeORM) protected readonly typeORM: TypeORM;
 
     start() {
-        log.error('[PeriodicDbDeleter] Start ...');
-        this.sync().catch((err) => log.error('[PeriodicDbDeleter] sync failed', err));
+        log.error("[PeriodicDbDeleter] Start ...");
+        this.sync().catch((err) => log.error("[PeriodicDbDeleter] sync failed", err));
     }
 
     protected async sync() {
@@ -56,12 +56,12 @@ export class PeriodicDbDeleter {
         }
 
         const { deletionColumn, primaryKeys } = table;
-        const markedAsDeletedQuery = `SELECT ${primaryKeys.join(', ')} FROM ${
+        const markedAsDeletedQuery = `SELECT ${primaryKeys.join(", ")} FROM ${
             table.name
         } WHERE ${deletionColumn} = true ;`;
         const rows = await this.query(markedAsDeletedQuery);
 
-        const whereClauseFn = (row: any) => primaryKeys.map((pk) => `${pk}='${row[pk]}'`).join(' AND ');
+        const whereClauseFn = (row: any) => primaryKeys.map((pk) => `${pk}='${row[pk]}'`).join(" AND ");
         for (const i in rows) {
             const row = rows[i];
             const whereClause = whereClauseFn(row);

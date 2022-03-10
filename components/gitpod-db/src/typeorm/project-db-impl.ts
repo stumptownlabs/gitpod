@@ -4,20 +4,20 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { inject, injectable } from 'inversify';
-import { TypeORM } from './typeorm';
-import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
-import { PartialProject, Project, ProjectEnvVar, ProjectEnvVarWithValue } from '@gitpod/gitpod-protocol';
-import { EncryptionService } from '@gitpod/gitpod-protocol/lib/encryption/encryption-service';
-import { ProjectDB } from '../project-db';
-import { DBProject } from './entity/db-project';
-import { DBProjectEnvVar } from './entity/db-project-env-vars';
-import { DBProjectInfo } from './entity/db-project-info';
+import { inject, injectable } from "inversify";
+import { TypeORM } from "./typeorm";
+import { Repository } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
+import { PartialProject, Project, ProjectEnvVar, ProjectEnvVarWithValue } from "@gitpod/gitpod-protocol";
+import { EncryptionService } from "@gitpod/gitpod-protocol/lib/encryption/encryption-service";
+import { ProjectDB } from "../project-db";
+import { DBProject } from "./entity/db-project";
+import { DBProjectEnvVar } from "./entity/db-project-env-vars";
+import { DBProjectInfo } from "./entity/db-project-info";
 
 function toProjectEnvVar(envVarWithValue: ProjectEnvVarWithValue): ProjectEnvVar {
     const envVar = { ...envVarWithValue };
-    delete (envVar as any)['value'];
+    delete (envVar as any)["value"];
     return envVar;
 }
 
@@ -58,9 +58,9 @@ export class ProjectDBImpl implements ProjectDB {
         }
         const repo = await this.getRepo();
         const q = repo
-            .createQueryBuilder('project')
-            .where('project.markedDeleted = false')
-            .andWhere(`project.cloneUrl in (${cloneUrls.map((u) => `'${u}'`).join(', ')})`);
+            .createQueryBuilder("project")
+            .where("project.markedDeleted = false")
+            .andWhere(`project.cloneUrl in (${cloneUrls.map((u) => `'${u}'`).join(", ")})`);
         const projects = await q.getMany();
 
         const teamIds = Array.from(new Set(projects.map((p) => p.teamId).filter((id) => !!id)));
@@ -73,7 +73,7 @@ export class ProjectDBImpl implements ProjectDB {
                   ).query(`
                 SELECT member.teamId AS teamId, user.name AS owner FROM d_b_user AS user
                     LEFT JOIN d_b_team_membership AS member ON (user.id = member.userId)
-                    WHERE member.teamId IN (${teamIds.map((id) => `'${id}'`).join(', ')})
+                    WHERE member.teamId IN (${teamIds.map((id) => `'${id}'`).join(", ")})
                     AND member.deleted = 0
                     AND member.role = 'owner'
             `)) as { teamId: string; owner: string }[]);
@@ -103,14 +103,14 @@ export class ProjectDBImpl implements ProjectDB {
         offset: number,
         limit: number,
         orderBy: keyof Project,
-        orderDir: 'DESC' | 'ASC',
+        orderDir: "DESC" | "ASC",
         searchTerm?: string,
     ): Promise<{ total: number; rows: Project[] }> {
         const projectRepo = await this.getRepo();
 
         const queryBuilder = projectRepo
-            .createQueryBuilder('project')
-            .where('project.cloneUrl LIKE :searchTerm', { searchTerm: `%${searchTerm}%` })
+            .createQueryBuilder("project")
+            .where("project.cloneUrl LIKE :searchTerm", { searchTerm: `%${searchTerm}%` })
             .skip(offset)
             .take(limit)
             .orderBy(orderBy, orderDir);
@@ -128,7 +128,7 @@ export class ProjectDBImpl implements ProjectDB {
         const repo = await this.getRepo();
         const count = await repo.count({ id: partialProject.id, markedDeleted: false });
         if (count < 1) {
-            throw new Error('A project with this ID could not be found');
+            throw new Error("A project with this ID could not be found");
         }
         await repo.update(partialProject.id, partialProject);
     }
@@ -155,7 +155,7 @@ export class ProjectDBImpl implements ProjectDB {
         censored: boolean,
     ): Promise<void> {
         if (!name) {
-            throw new Error('Variable name cannot be empty');
+            throw new Error("Variable name cannot be empty");
         }
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
             throw new Error(
@@ -203,7 +203,7 @@ export class ProjectDBImpl implements ProjectDB {
         const envVarRepo = await this.getProjectEnvVarRepo();
         const envVarWithValue = await envVarRepo.findOne({ id: variableId, deleted: false });
         if (!envVarWithValue) {
-            throw new Error('A environment variable with this name could not be found for this project');
+            throw new Error("A environment variable with this name could not be found for this project");
         }
         envVarWithValue.deleted = true;
         await envVarRepo.update({ id: envVarWithValue.id, projectId: envVarWithValue.projectId }, envVarWithValue);

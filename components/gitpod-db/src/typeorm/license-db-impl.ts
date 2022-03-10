@@ -4,12 +4,12 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { injectable, inject } from 'inversify';
-import { Repository } from 'typeorm';
+import { injectable, inject } from "inversify";
+import { Repository } from "typeorm";
 
-import { LicenseDB } from '../license-db';
-import { TypeORM } from './typeorm';
-import { DBLicenseKey } from './entity/db-license-key';
+import { LicenseDB } from "../license-db";
+import { TypeORM } from "./typeorm";
+import { DBLicenseKey } from "./entity/db-license-key";
 
 @injectable()
 export class LicenseDBImpl implements LicenseDB {
@@ -34,7 +34,7 @@ export class LicenseDBImpl implements LicenseDB {
     async get(): Promise<string | undefined> {
         const repo = await this.getRepo();
         const dbobj = await repo.findOne({
-            order: { installationTime: 'DESC' },
+            order: { installationTime: "DESC" },
         });
         if (!dbobj) {
             return;

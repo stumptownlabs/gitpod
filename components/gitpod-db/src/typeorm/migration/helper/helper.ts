@@ -4,7 +4,7 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { QueryRunner } from 'typeorm';
+import { QueryRunner } from "typeorm";
 
 export async function createIndexIfNotExist(
     queryRunner: QueryRunner,
@@ -13,11 +13,11 @@ export async function createIndexIfNotExist(
     columns: string[],
 ): Promise<void> {
     if (columns.length === 0) {
-        throw new Error('createIndexIfNotExist: Columns must not be empty!');
+        throw new Error("createIndexIfNotExist: Columns must not be empty!");
     }
 
     if (!indexExists(queryRunner, tableName, indexName)) {
-        const columnsStr = columns.map((cn) => `\`${cn}\``).join(', ');
+        const columnsStr = columns.map((cn) => `\`${cn}\``).join(", ");
         await queryRunner.query(`CREATE INDEX ${indexName} ON ${tableName} (${columnsStr})`);
     }
 }

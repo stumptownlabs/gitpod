@@ -4,11 +4,11 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Repository, EntityManager } from 'typeorm';
-import { injectable, inject } from 'inversify';
-import { TypeORM } from './typeorm';
-import { UserMessageViewsDB } from '../user-message-views-db';
-import { DBUserMessageViewEntry } from './entity/db-user-message-view-entry';
+import { Repository, EntityManager } from "typeorm";
+import { injectable, inject } from "inversify";
+import { TypeORM } from "./typeorm";
+import { UserMessageViewsDB } from "../user-message-views-db";
+import { DBUserMessageViewEntry } from "./entity/db-user-message-view-entry";
 
 @injectable()
 export class TypeORMUserMessageViewsDBImpl implements UserMessageViewsDB {
@@ -25,8 +25,8 @@ export class TypeORMUserMessageViewsDBImpl implements UserMessageViewsDB {
     async didViewMessage(userId: string, userMessageId: string): Promise<boolean> {
         const repo = await this.getUserMessageViewsRepo();
         let query = repo
-            .createQueryBuilder('view')
-            .where('view.userMessageId = :userMessageId AND view.userId = :userId', {
+            .createQueryBuilder("view")
+            .where("view.userMessageId = :userMessageId AND view.userId = :userId", {
                 userId: userId,
                 userMessageId: userMessageId,
             });

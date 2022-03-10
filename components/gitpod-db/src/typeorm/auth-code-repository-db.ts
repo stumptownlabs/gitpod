@@ -11,14 +11,14 @@ import {
     OAuthClient,
     OAuthScope,
     OAuthUser,
-} from '@jmondi/oauth2-server';
-import * as crypto from 'crypto';
-import { inject, injectable } from 'inversify';
-import { EntityManager, Repository } from 'typeorm';
-import { DBOAuthAuthCodeEntry } from './entity/db-oauth-auth-code';
-import { TypeORM } from './typeorm';
+} from "@jmondi/oauth2-server";
+import * as crypto from "crypto";
+import { inject, injectable } from "inversify";
+import { EntityManager, Repository } from "typeorm";
+import { DBOAuthAuthCodeEntry } from "./entity/db-oauth-auth-code";
+import { TypeORM } from "./typeorm";
 
-const expiryInFuture = new DateInterval('5m');
+const expiryInFuture = new DateInterval("5m");
 
 @injectable()
 export class AuthCodeRepositoryDB implements OAuthAuthCodeRepository {
@@ -44,7 +44,7 @@ export class AuthCodeRepositoryDB implements OAuthAuthCodeRepository {
         return authCode;
     }
     public issueAuthCode(client: OAuthClient, user: OAuthUser | undefined, scopes: OAuthScope[]): OAuthAuthCode {
-        const code = crypto.randomBytes(30).toString('hex');
+        const code = crypto.randomBytes(30).toString("hex");
         // NOTE: caller (@jmondi/oauth2-server) is responsible for adding the remaining items, PKCE params, redirect URL, etc
         return {
             code: code,

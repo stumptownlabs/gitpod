@@ -4,11 +4,11 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { MigrationInterface, QueryRunner } from 'typeorm';
-import { columnExists } from './helper/helper';
+import { MigrationInterface, QueryRunner } from "typeorm";
+import { columnExists } from "./helper/helper";
 
-const TABLE_NAME = 'd_b_team_subscription';
-const COLUMN_NAME = 'excludeFromMoreResources';
+const TABLE_NAME = "d_b_team_subscription";
+const COLUMN_NAME = "excludeFromMoreResources";
 
 export class TSExcludeFromMoreResources1646410374581 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {

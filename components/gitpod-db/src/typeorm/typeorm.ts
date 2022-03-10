@@ -4,43 +4,43 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { injectable, inject, optional } from 'inversify';
+import { injectable, inject, optional } from "inversify";
 
-import { Connection, createConnection, ConnectionOptions, getConnectionManager, PrimaryColumnOptions } from 'typeorm';
-import { Config } from '../config';
-import { DefaultNamingStrategy } from './naming-strategy';
+import { Connection, createConnection, ConnectionOptions, getConnectionManager, PrimaryColumnOptions } from "typeorm";
+import { Config } from "../config";
+import { DefaultNamingStrategy } from "./naming-strategy";
 
-export const TypeORMOptions = Symbol('TypeORMOptions');
+export const TypeORMOptions = Symbol("TypeORMOptions");
 
 @injectable()
 export class TypeORM {
-    static readonly DEFAULT_CONNECTION_NAME = 'default';
+    static readonly DEFAULT_CONNECTION_NAME = "default";
     static readonly UUID_COLUMN_TYPE: PrimaryColumnOptions = {
-        type: 'char',
+        type: "char",
         length: 36,
     };
     static readonly WORKSPACE_ID_COLUMN_TYPE: PrimaryColumnOptions = {
-        type: 'char',
+        type: "char",
         length: 36,
     };
 
     static defaultOptions(dir: string): ConnectionOptions {
         console.log(`Loading TypeORM entities and migrations from ${dir}`);
         return {
-            type: 'mysql',
+            type: "mysql",
             synchronize: false,
             migrationsRun: false,
             logging: false,
             connectTimeout: 20000,
-            timezone: 'utc',
-            charset: 'utf8mb4',
-            entities: [dir + '/entity/**/*.js', dir + '/entity/**/*.ts'],
-            migrations: [dir + '/migration/*.js', dir + '/migration/*.ts'],
-            subscribers: [dir + '/subscriber/**/*.js'],
+            timezone: "utc",
+            charset: "utf8mb4",
+            entities: [dir + "/entity/**/*.js", dir + "/entity/**/*.ts"],
+            migrations: [dir + "/migration/*.js", dir + "/migration/*.ts"],
+            subscribers: [dir + "/subscriber/**/*.js"],
             cli: {
-                entitiesDir: 'src/typeorm/entity',
-                migrationsDir: 'src/typeorm/migration',
-                subscribersDir: 'src/typeorm/subscriber',
+                entitiesDir: "src/typeorm/entity",
+                migrationsDir: "src/typeorm/migration",
+                subscribersDir: "src/typeorm/subscriber",
             },
             namingStrategy: new DefaultNamingStrategy(),
         };

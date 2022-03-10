@@ -4,12 +4,12 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { inject, injectable } from 'inversify';
-import { InstallationAdmin, InstallationAdminSettings } from '@gitpod/gitpod-protocol';
-import { Repository } from 'typeorm';
-import { TypeORM } from './typeorm';
-import { InstallationAdminDB } from '../installation-admin-db';
-import { DBInstallationAdmin } from './entity/db-installation-admin';
+import { inject, injectable } from "inversify";
+import { InstallationAdmin, InstallationAdminSettings } from "@gitpod/gitpod-protocol";
+import { Repository } from "typeorm";
+import { TypeORM } from "./typeorm";
+import { InstallationAdminDB } from "../installation-admin-db";
+import { DBInstallationAdmin } from "./entity/db-installation-admin";
 
 @injectable()
 export class TypeORMInstallationAdminImpl implements InstallationAdminDB {

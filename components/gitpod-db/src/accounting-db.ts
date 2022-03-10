@@ -9,24 +9,24 @@ import {
     Subscription,
     SubscriptionAndUser,
     Credit,
-} from '@gitpod/gitpod-protocol/lib/accounting-protocol';
-import { DBSubscriptionAdditionalData } from './typeorm/entity/db-subscription';
-import { EntityManager } from 'typeorm';
+} from "@gitpod/gitpod-protocol/lib/accounting-protocol";
+import { DBSubscriptionAdditionalData } from "./typeorm/entity/db-subscription";
+import { EntityManager } from "typeorm";
 
-export const TransactionalAccountingDBFactory = Symbol('TransactionalAccountingDBFactory');
+export const TransactionalAccountingDBFactory = Symbol("TransactionalAccountingDBFactory");
 export interface TransactionalAccountingDBFactory {
     (manager: EntityManager): AccountingDB;
 }
 
-export const AccountingDB = Symbol('AccountingDB');
+export const AccountingDB = Symbol("AccountingDB");
 
 export interface AccountingDB {
-    newAccountEntry(entry: Omit<AccountEntry, 'uid'>): Promise<AccountEntry>;
+    newAccountEntry(entry: Omit<AccountEntry, "uid">): Promise<AccountEntry>;
     storeAccountEntry(AccountEntry: AccountEntry): void;
     findAccountEntriesFor(userId: string, fromDate: string, toDate: string): Promise<AccountEntry[]>;
     findOpenCredits(userId: string, date: string): Promise<Credit[]>;
 
-    newSubscription(subscription: Omit<Subscription, 'uid'>): Promise<Subscription>;
+    newSubscription(subscription: Omit<Subscription, "uid">): Promise<Subscription>;
     storeSubscription(subscription: Subscription): Promise<Subscription>;
     findSubscriptionById(id: string): Promise<Subscription | undefined>;
     deleteSubscription(subscription: Subscription): Promise<void>;

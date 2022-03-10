@@ -7,9 +7,9 @@
 /**
  * Script that waits for a database to become available
  */
-import 'reflect-metadata';
-import { Config } from './config';
-import * as mysql from 'mysql';
+import "reflect-metadata";
+import { Config } from "./config";
+import * as mysql from "mysql";
 
 const retryPeriod = 5000; // [ms]
 const totalAttempts = 30;
@@ -25,7 +25,7 @@ function connectOrReschedule(attempt: number) {
             if (err) {
                 rescheduleConnectionAttempt(attempt, err);
             } else {
-                console.log('DB is available');
+                console.log("DB is available");
                 con.destroy();
                 process.exit(0);
             }

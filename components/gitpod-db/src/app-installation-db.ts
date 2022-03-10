@@ -4,21 +4,21 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { AppInstallation, AppInstallationPlatform } from '@gitpod/gitpod-protocol';
+import { AppInstallation, AppInstallationPlatform } from "@gitpod/gitpod-protocol";
 
-export const AppInstallationDB = Symbol('AppInstallationDB');
+export const AppInstallationDB = Symbol("AppInstallationDB");
 
 export interface AppInstallationDB {
     recordNewInstallation(
         platform: AppInstallationPlatform,
-        source: 'user' | 'platform',
+        source: "user" | "platform",
         installationID: string,
         ownerUserID?: string,
         platformUserID?: string,
     ): Promise<void>;
     recordUninstallation(
         platform: AppInstallationPlatform,
-        source: 'user' | 'platform',
+        source: "user" | "platform",
         installationID: string,
     ): Promise<void>;
 

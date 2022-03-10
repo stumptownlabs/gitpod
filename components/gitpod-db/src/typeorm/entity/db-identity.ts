@@ -4,20 +4,20 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { Entity, Column, PrimaryColumn, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, Index } from "typeorm";
 
-import { Identity, Token } from '@gitpod/gitpod-protocol';
-import { DBUser } from './db-user';
-import { Transformer } from '../transformer';
+import { Identity, Token } from "@gitpod/gitpod-protocol";
+import { DBUser } from "./db-user";
+import { Transformer } from "../transformer";
 
 @Entity()
-@Index('ind_authProviderId_authName', ['authProviderId', 'authName'])
+@Index("ind_authProviderId_authName", ["authProviderId", "authName"])
 // on DB but not Typeorm: @Index("ind_lastModified", ["_lastModified"])   // DBSync
 export class DBIdentity implements Identity {
-    @PrimaryColumn('varchar')
+    @PrimaryColumn("varchar")
     authProviderId: string;
 
-    @PrimaryColumn('varchar')
+    @PrimaryColumn("varchar")
     authId: string;
 
     /** Workaround: Typeorm does not (yet) support uni-directional OneToMany relations */
@@ -28,14 +28,14 @@ export class DBIdentity implements Identity {
     authName: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     primaryEmail?: string;
 
     /** @deprecated */
     @Column({
-        type: 'simple-json',
+        type: "simple-json",
         // We want to deprecate the field without changing the schema just yet so we silence all writes and reads
         transformer: {
             to(value: any): any {

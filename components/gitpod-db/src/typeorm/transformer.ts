@@ -4,19 +4,19 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
-import { EncryptionService } from '@gitpod/gitpod-protocol/lib/encryption/encryption-service';
+import { ValueTransformer } from "typeorm/decorator/options/ValueTransformer";
+import { EncryptionService } from "@gitpod/gitpod-protocol/lib/encryption/encryption-service";
 
 export namespace Transformer {
     export const MAP_EMPTY_STR_TO_UNDEFINED: ValueTransformer = {
         to(value: any): any {
             if (value === undefined) {
-                return '';
+                return "";
             }
             return value;
         },
         from(value: any): any {
-            if (value === '') {
+            if (value === "") {
                 return undefined;
             }
             return value;

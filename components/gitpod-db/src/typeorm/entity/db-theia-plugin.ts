@@ -4,10 +4,10 @@
  * See License-AGPL.txt in the project root for license information.
  */
 
-import { PrimaryColumn, Column, Entity } from 'typeorm';
-import { TypeORM } from '../typeorm';
-import { TheiaPlugin } from '@gitpod/gitpod-protocol';
-import { Transformer } from '../transformer';
+import { PrimaryColumn, Column, Entity } from "typeorm";
+import { TypeORM } from "../typeorm";
+import { TheiaPlugin } from "@gitpod/gitpod-protocol";
+import { Transformer } from "../transformer";
 
 @Entity()
 // on DB but not Typeorm: @Index("ind_lastModified", ["_lastModified"])   // DBSync
@@ -19,13 +19,13 @@ export class DBTheiaPlugin implements TheiaPlugin {
     pluginName: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     pluginId?: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     userId?: string;
@@ -37,7 +37,7 @@ export class DBTheiaPlugin implements TheiaPlugin {
     path: string;
 
     @Column({
-        default: '',
+        default: "",
         transformer: Transformer.MAP_EMPTY_STR_TO_UNDEFINED,
     })
     hash?: string;

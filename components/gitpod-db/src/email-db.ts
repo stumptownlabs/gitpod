@@ -4,13 +4,13 @@
  * See License.enterprise.txt in the project root folder.
  */
 
-import { EMail } from '@gitpod/gitpod-protocol';
-import { DeepPartial, Repository } from 'typeorm';
-import { DBEmail } from './typeorm/entity/db-email';
+import { EMail } from "@gitpod/gitpod-protocol";
+import { DeepPartial, Repository } from "typeorm";
+import { DBEmail } from "./typeorm/entity/db-email";
 
-export type PartialEMailUpdate = DeepPartial<EMail> & Pick<EMail, 'uid'>;
+export type PartialEMailUpdate = DeepPartial<EMail> & Pick<EMail, "uid">;
 
-export const EMailDB = Symbol('EMailDB');
+export const EMailDB = Symbol("EMailDB");
 export interface EMailDB {
     scheduleEmail(newEmail: EMail): Promise<EMail>;
     updatePartial(partial: PartialEMailUpdate): Promise<void>;
