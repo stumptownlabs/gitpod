@@ -13,7 +13,7 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/minio/minio-go/v7 v7.0.11
-	github.com/moby/moby v20.10.7+incompatible
+	github.com/moby/moby v20.10.20+incompatible
 	github.com/moby/sys/mount v0.2.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.2
