@@ -62,7 +62,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.11 // indirect
 	github.com/minio/sha256-simd v0.1.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/moby/moby v20.10.7+incompatible // indirect
+	github.com/moby/moby v20.10.20+incompatible // indirect
 	github.com/moby/sys/mount v0.2.0 // indirect
 	github.com/moby/sys/mountinfo v0.4.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
