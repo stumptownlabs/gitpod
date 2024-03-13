@@ -11,7 +11,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.1.3
 	google.golang.org/grpc v1.39.1
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.33.0
 	sigs.k8s.io/yaml v1.3.0
 )
 
