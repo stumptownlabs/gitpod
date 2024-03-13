@@ -44,7 +44,7 @@ require (
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
 	golang.org/x/tools v0.1.1 // indirect
 	google.golang.org/genproto v0.0.0-20201019141844-1ed22bb0c154 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 )
 
 replace github.com/gitpod-io/gitpod/common-go => ../common-go // leeway
